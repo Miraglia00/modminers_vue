@@ -100,6 +100,9 @@ export default {
         message: ''
     }
   },
+  mounted: function() {
+    this.register;
+  },
   methods: {
     async register() {
      try {
@@ -110,7 +113,11 @@ export default {
           password: this.password
         })
         this.message = response.data.message;
-        this.$emit('message', this.message);
+        this.$emit('showMessage', {
+          title: this.message,
+          message: "A regisztráció véglegesítéséhez megkell erősítened az e-mail címed. Ezután már be is tudsz jelentekzni a weboldalra. :)",
+          variant: "success"
+        });
         this.$router.replace('/');
          
       }catch(err) {
