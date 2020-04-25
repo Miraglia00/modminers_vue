@@ -14,7 +14,7 @@
                     <h4 class="mb-0">
                         <b-row align-v="center">
                             <b-col cols="10">
-                                 <p class="m-0">Regisztráció</p>
+                                 <p class="m-0" style="text-align: left !important">Regisztráció</p>
                             </b-col>
                             <b-col cols="2">
                                 <b-icon font-scale="2" icon="plus"></b-icon>
