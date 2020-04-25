@@ -1,37 +1,45 @@
 <template>
   <div id="app">
-     <b-alert variant="success" dismissible show v-if="this.message">
-      {{this.message}}
-    </b-alert>
-    <Navbar hidden />
-    <router-view @message="showMessage" />
+    <Navbar />
+    <Toast message="message" />
+    <router-view @showMessage="message" />
   </div>
 </template>
 <style>
 </style>
 
 <script>
-import Navbar from "./components/Navbar";
+import Navbar from './components/Navbar';
+import Toast from './components/Toast'
 
 export default {
   components:{
-    Navbar
+    Navbar,
+    Toast
   },
    data() {
     return {
-        message: ''
+        message: {
+          title: "Tezst",
+          message: "ez egy teszt message",
+          variant: "success"
+        }
     }
   },
+  mounted: function () {
+    this.makeToast(this.message);
+  },
   methods: {
-    showMessage(value) {
-      console.log(value)
-      this.$bvToast.toast('Átlettél irányítva a főoldalra, most már bejelentkezhetsz. Kellemes időtöltést.', {
-          title: value,
-          variant: 'success',
-          autoHideDelay: 5000,
-          appendToast: false
+    showMessage(message) {
+      this.message = message;
+    },
+     makeToast(message) {
+        this.$bvToast.toast(message.message, {
+            title: message.title,
+            variant: message.variant,
+            solid: true
         })
-    }
-  }
+      }
+  },
   }
 </script>
