@@ -2,11 +2,17 @@ import '@babel/polyfill'
 import 'mutationobserver-shim'
 import Vue from 'vue'
 import './plugins/axios'
-import 'bootswatch/dist/darkly/bootstrap.css'
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+import 'bootswatch/dist/darkly/bootstrap.min.css';
 import App from './App.vue'
 import router from './router'
 
 Vue.config.productionTip = false
+
+Vue.use(BootstrapVue)
+Vue.use(IconsPlugin)
 
 new Vue({
   router,

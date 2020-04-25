@@ -1,5 +1,5 @@
 <template>
-  <div id="app" style="background-color: #b1b1b1">
+  <div id="app">
      <b-alert variant="success" dismissible show v-if="this.message">
       {{this.message}}
     </b-alert>
@@ -7,7 +7,6 @@
     <router-view @message="showMessage" />
   </div>
 </template>
-
 <style>
 </style>
 

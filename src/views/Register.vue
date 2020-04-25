@@ -1,25 +1,17 @@
 <template>
 <b-container>
   <b-row align-v="center" style="min-height:100vh">
-    <b-col cols="12" offset="0" md="6" offset-md="3">
+    <b-col cols="12" offset="0" md="8" offset-md="2" lg="4" offset-lg="4">
         <b-card-group deck>
             <b-card
                 border-variant="dark"
-                header="Regisztráció"
                 header-bg-variant="dark"
                 header-text-variant="white"
                 align="center"
             >
                 <template v-slot:header>
                     <h4 class="mb-0">
-                        <b-row align-v="center">
-                            <b-col cols="10">
-                                 <p class="m-0" style="text-align: left !important">Regisztráció</p>
-                            </b-col>
-                            <b-col cols="2">
-                                <b-icon font-scale="2" icon="plus"></b-icon>
-                            </b-col>
-                        </b-row>                         
+                      Regisztráció                      
                     </h4>
                 </template>
                 <b-card-text>
