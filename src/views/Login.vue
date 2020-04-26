@@ -11,7 +11,7 @@
             >
                 <template v-slot:header>
                     <h4 class="mb-0">
-                      Regisztráció                      
+                      Belépés                      
                     </h4>
                 </template>
                 <b-card-text>
@@ -28,20 +28,6 @@
                     </b-form-invalid-feedback>
 
                     <b-form-input
-                    v-model="email"
-                    :state="emailState"
-                    aria-describedby="input-live-help input-live-feedback"
-                    placeholder="Email cím"
-                    trim
-                    class="mt-3"
-                    ></b-form-input>
-
-                    <b-form-invalid-feedback id="input-live-feedback" v-if="this.errormsg">
-                        {{this.errormsg.email}}
-                        {{this.errormsg.validemail}}
-                    </b-form-invalid-feedback>
-
-                    <b-form-input
                     type="password"
                     v-model="password"
                     :state="passwordState"
@@ -55,18 +41,6 @@
                         {{this.errormsg.password}}
                     </b-form-invalid-feedback>
 
-                    <b-form-textarea
-                    v-model="intro"
-                    :state="introState"
-                    placeholder="Írj legalább két mondatot magadról..."
-                    rows="3"
-                    class="mt-3"
-                    no-resize
-                    ></b-form-textarea>
-
-                    <b-form-invalid-feedback id="input-live-feedback" v-if="this.errormsg">
-                        {{this.errormsg.description}}
-                    </b-form-invalid-feedback>
                     <div class="mt-3">
                         <b-button @click="register" block class="p-10" squared variant="outline-primary" align-v="center">
                             Regisztráció
@@ -126,6 +100,7 @@ export default {
         this.emailState = this.errormsg.email || this.errormsg.validemail ? false : true;
         this.passwordState = this.errormsg.password ? false : true;
         this.introState = this.errormsg.description ? false : true;
+        console.log(this.errormsg)
       }
     }
   }

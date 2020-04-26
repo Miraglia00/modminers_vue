@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Navbar />
+    <Navbar hidden/>
     <router-view v-on:showMessage="showMessage" />
   </div>
 </template>
@@ -9,6 +9,7 @@
 
 <script>
 import Navbar from './components/Navbar';
+import Authentication from './api/Authentication'
 
 export default {
   components:{
@@ -17,6 +18,9 @@ export default {
    data() {
     return {
     }
+  },
+  mounted: async () => {
+    await Authentication.wakeUp();
   },
   methods: {
     showMessage(message) {
