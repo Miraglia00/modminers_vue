@@ -16,6 +16,7 @@
                 </template>
                 <b-card-text>
                     <b-form-input
+                    v-on:keyup.enter="login"
                     v-model="username"
                     :state="usernameState"
                     aria-describedby="input-live-help input-live-feedback"
@@ -25,9 +26,11 @@
 
                     <b-form-invalid-feedback id="input-live-feedback" v-if="this.errormsg">
                         {{this.errormsg.username}}
+                        {{this.errormsg.notverified}}
                     </b-form-invalid-feedback>
 
                     <b-form-input
+                    v-on:keyup.enter="login"
                     type="password"
                     v-model="password"
                     :state="passwordState"
@@ -42,8 +45,8 @@
                     </b-form-invalid-feedback>
 
                     <div class="mt-3">
-                        <b-button @click="register" block class="p-10" squared variant="outline-primary" align-v="center">
-                            Regisztráció
+                        <b-button @click="login" block class="p-10" squared variant="outline-primary" align-v="center">
+                            Belépés
                         </b-button>
                     </div>
 
@@ -67,9 +70,7 @@ export default {
         password: '',
         intro: '',
         usernameState: null,
-        emailState: null,
         passwordState: null,
-        introState: null,
         errormsg: null,
         message: ''
     }
@@ -78,29 +79,23 @@ export default {
     this.register;
   },
   methods: {
-    async register() {
+    async login() {
      try {
-        const response = await Authentication.register({
+        const response = await Authentication.login({
           username: this.username,
-          email: this.email,
-          description: this.intro,
           password: this.password
         })
         this.message = response.data.message;
         this.$emit('showMessage', {
           title: this.message,
-          message: "A regisztráció véglegesítéséhez megkell erősítened az e-mail címed. Ezután már be is tudsz jelentekzni a weboldalra. :)",
+          message: "Üdvözöllek a weboldalon!",
           variant: "success"
         });
         this.$router.replace('/');
-         
       }catch(err) {
         this.errormsg = err.response.data
-        this.usernameState = this.errormsg.username ? false : true;
-        this.emailState = this.errormsg.email || this.errormsg.validemail ? false : true;
-        this.passwordState = this.errormsg.password ? false : true;
-        this.introState = this.errormsg.description ? false : true;
-        console.log(this.errormsg)
+        this.usernameState = this.errormsg.username || this.errormsg.notverified ? false : true;
+        this.passwordState = this.errormsg.password || this.errormsg.notverified ? false : true;
       }
     }
   }

@@ -16,6 +16,7 @@
                 </template>
                 <b-card-text>
                     <b-form-input
+                    v-on:keyup.enter="register"
                     v-model="username"
                     :state="usernameState"
                     aria-describedby="input-live-help input-live-feedback"
@@ -28,6 +29,7 @@
                     </b-form-invalid-feedback>
 
                     <b-form-input
+                    v-on:keyup.enter="register"
                     v-model="email"
                     :state="emailState"
                     aria-describedby="input-live-help input-live-feedback"
@@ -42,6 +44,7 @@
                     </b-form-invalid-feedback>
 
                     <b-form-input
+                    v-on:keyup.enter="register"
                     type="password"
                     v-model="password"
                     :state="passwordState"
@@ -56,6 +59,7 @@
                     </b-form-invalid-feedback>
 
                     <b-form-textarea
+                    v-on:keyup.enter="register"
                     v-model="intro"
                     :state="introState"
                     placeholder="Írj legalább két mondatot magadról..."
