@@ -4,6 +4,10 @@ import Home from '../views/Home.vue'
 import Register from '../views/Register';
 import Login from '../views/Login';
 
+const NProgress = require('nprogress');
+
+import EmailVerification from '../views/user/EmailVerification';
+
 Vue.use(VueRouter)
 
   const routes = [
@@ -23,6 +27,11 @@ Vue.use(VueRouter)
     component: Login
   },
   {
+    path: '/user/verifyEmail',
+    name: 'EmailVerification',
+    component: EmailVerification
+  },
+  {
     path: '/about',
     name: 'About',
     // route level code-splitting
@@ -36,6 +45,20 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+
+router.beforeResolve((to, from, next) => {
+  // If this isn't an initial page load.
+  if (to.name) {
+      // Start the route progress bar.
+      NProgress.start()
+  }
+  next()
+})
+
+router.afterEach((to, from) => {
+  // Complete the animation of the route progress bar.
+  NProgress.done()
 })
 
 export default router

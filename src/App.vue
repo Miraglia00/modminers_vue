@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <Navbar hidden/>
+    <LoadingSpinner :start="loadspin.val" />
+    <PageSpinner :start="pagespin.val" />
+    <Navbar v-if="navbar.val" />
     <router-view v-on:showMessage="showMessage" />
   </div>
 </template>
@@ -10,14 +12,36 @@
 <script>
 import Navbar from './components/Navbar';
 import Authentication from './api/Authentication'
+import LoadingSpinner from './components/LoadingSpinner';
+import PageSpinner from './components/PageSpinner';
 
 export default {
   components:{
-    Navbar
+    Navbar,
+    LoadingSpinner,
+    PageSpinner
   },
    data() {
     return {
+      loadspin: {
+        val: false
+      },
+      pagespin: {
+        val: true,
+        text: 'Az olal betöltése...',
+        timeout: true
+      },
+      navbar: {
+        val: true
+      }
     }
+  },
+  provide() {
+    return {
+      pageSpinner: this.pagespin,
+      loadingSpinner: this.loadspin,
+      navBar: this.navbar
+    };
   },
   mounted: async () => {
     await Authentication.wakeUp();

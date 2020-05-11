@@ -90,6 +90,7 @@
 import Authentication from '../api/Authentication';
 
 export default {
+  inject: ['mySpinner'],
   data() {
     return {
         username: '',
@@ -106,6 +107,7 @@ export default {
   },
   methods: {
     async register() {
+    this.mySpinner.val = true;
      try {
         const response = await Authentication.register({
           username: this.username,
@@ -113,6 +115,7 @@ export default {
           description: this.intro,
           password: this.password
         })
+        this.mySpinner.val = false;
         this.message = response.data.message;
         this.$emit('showMessage', {
           title: this.message,
@@ -122,6 +125,7 @@ export default {
         this.$router.replace('/');
          
       }catch(err) {
+        this.mySpinner.val = false;
         this.errormsg = err.response.data
         this.usernameState = this.errormsg.username ? false : true;
         this.emailState = this.errormsg.email || this.errormsg.validemail ? false : true;

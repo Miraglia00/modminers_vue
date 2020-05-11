@@ -11,43 +11,40 @@
             >
                 <template v-slot:header>
                     <h4 class="mb-0">
-                      Belépés                      
+                      Új jelszó                      
                     </h4>
                 </template>
                 <b-card-text>
                     <b-form-input
-                    v-on:keyup.enter="login"
-                    v-model="username"
-                    :state="usernameState"
+                    v-on:keyup.enter="newpassword"
+                    v-model="psw_1"
+                    :state="psw_1State"
                     aria-describedby="input-live-help input-live-feedback"
-                    placeholder="Felhasználónév"
+                    placeholder="Jelszó 1"
                     trim
                     ></b-form-input>
 
                     <b-form-invalid-feedback id="input-live-feedback" v-if="this.errormsg">
-                        {{this.errormsg.username}}
+                        {{this.errormsg.psw1}}
                     </b-form-invalid-feedback>
 
                     <b-form-input
-                    v-on:keyup.enter="login"
-                    type="password"
-                    v-model="password"
-                    :state="passwordState"
+                    v-on:keyup.enter="newpassword"
+                    v-model="psw_2"
+                    :state="psw_2State"
                     aria-describedby="input-live-help input-live-feedback"
-                    placeholder="Jelszó"
+                    placeholder="Jelszó 2"
                     trim
                     class="mt-3"
                     ></b-form-input>
 
                     <b-form-invalid-feedback id="input-live-feedback" v-if="this.errormsg">
-                        {{this.errormsg.password}}<br /><br />
-                        {{this.errormsg.email_notverified}}
-                        {{this.errormsg.user_notverified}}
+                        {{this.errormsg.psw2}}
                     </b-form-invalid-feedback>
 
                     <div class="mt-3">
-                        <b-button @click="login" block class="p-10" squared variant="outline-primary" align-v="center">
-                            Belépés
+                        <b-button @click="newpassword" block class="p-10" squared variant="outline-primary" align-v="center">
+                            Új jelszó!
                         </b-button>
                     </div>
 
@@ -67,18 +64,15 @@ export default {
   inject: ['mySpinner'],
   data() {
     return {
-        username: '',
-        email: '',
-        password: '',
-        intro: '',
-        usernameState: null,
-        passwordState: null,
-        errormsg: null,
-        message: ''
+        psw_1: '',
+        psw_2: '',
+        psw_1State: null,
+        psw_2State: null,
+        errormsg: null
     }
   },
   methods: {
-    async login() {
+    async newpassword() {
      this.mySpinner.val = true;
      try {
         const response = await Authentication.login({
