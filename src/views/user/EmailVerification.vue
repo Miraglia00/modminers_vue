@@ -49,13 +49,12 @@ export default {
                     email: this.$route.query.email,
                     key: this.$route.query.key
                 })
-                if(response.data.valid === true && response.response.status === 200) {
+                if(response.data.valid === true && response.status === 200) {
                     this.pageSpinner.val = false;
                 }else{
                     this.message = {error: response.data.message}
                     this.pageSpinner.val = false;
                 }
-                console.log(response)
             } catch (err) {
                 this.message = {error: err.response.data.message}
                 this.pageSpinner.val = false;

@@ -49,6 +49,10 @@
                         <b-button @click="login" block class="p-10" squared variant="outline-primary" align-v="center">
                             Belépés
                         </b-button>
+                        <hr mb-3>
+                        <b-button @click="newPassword" block class="p-10" squared variant="outline-primary" align-v="center">
+                            Elfelejtett jelszó
+                        </b-button>
                     </div>
 
                 </b-card-text>
