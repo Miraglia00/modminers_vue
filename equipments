@@ -1,0 +1,96 @@
+/* 
+MELEE:
+	1, Tactical Tomahawk (mw:tactical_tomahawk)
+	2,	Baseball Bat (mw:baseball_bat)
+	3, Lucy (mw:baseball_bat_nails)
+	4,	Nightstick (mw:night_stick)
+EQUIPMENTS:
+
+EXPLOSIONS:
+	1, M67 Frag (mw:m67frag)
+	
+ATTACHMENTS:
+	SIGHTS:
+	A, Bijia Reflex Sight (mw:bijiareflex)
+	B, RMR Sight (mw:rmrsight)
+	C, ACOG (mw:acog)
+	D, EOTech 512 A65 Holo (mw:holographicalt)
+	E, Night Raider (mw:nightraiderscope)
+	F, PSO-1 Scope (mw:pso1)
+	G, OKP-7 (mw:okp7)
+	H, JPU HP 3-9x40 (mw:hpscope)
+	SILENCERS:
+	I, .45 ACP Silencer (mw:silencer45acp)
+	J, 9(x18/19)mm Silencer (mw:silencer9mm)
+	K, 12 Gauge Silencer (mw:silencer12gauge)
+	L, 5.45x39 Silencer (mw:silencer545x39)
+	M, 5.56x45 Silencer (mw:silencer556x39)
+	LASERS:
+	N, UTG Tactical Laser (mw:laser)
+	GRIPS:
+	O, Bipod (mw:bipod)
+	P, Grip (mw:grip2)
+	Q, Juno Grip (mw:junogrip)
+	R, Stubby Grip (mw:stubbygrip)
+
+	
+WEAPONS:
+	PISTOLS:
+		1, IMI Desert Eagle(mw:desert_eagle) - .50 AE 7rnd Magazine(mw:deserteaglemag) - .50 AE Bullet (mw:bullet50ae) | D: 15
+		2, Colt M1911 (mw:m1911) - 14rnd .45 ACP Magazine (mw:m45a1mag14) - .45 ACP Bullet (mw:bullet45acp) | D: 6
+		3, M9A1 Beretta (mw:m9a1) - 15rnd 9x19mm Magazine (mw:m9mag_2) - 9x19mm Bullet (mw:bullet9x19mm) | D: 5.5
+		4, VP-70 (mw:vp70) - 18rnd 9x19mm Magazine (mw:vp70mag_2) - 9x19 Bullet (mw:bullet9x19mm) | D: 5.5
+
+		ATTACHMENTS:
+			1, A, B
+			2, I
+			3, J, N
+			4, - 
+
+	SHOTGUNS:
+		1, Saiga 12 (mw:saiga12) - 5rnd 12G Magazine (mw:saigamag_2) - 12 Gauage Shell (mw:shotgun12gauge) | D: 60
+		2, M500A2 (mw:m500a2) - 12 Gauge Shell (mw:shotgun12gauge) | D: 120
+		3, M1897 (mw:m1897) - 12 Gauge Shell (mw:shotgun12gauge) | D: 120
+		
+		ATTACHMENTS:
+			1, F, G
+			2, -
+			3, K
+
+	SUBMACHINE GUNS:
+		1, Kriss Vector (mw:kriss_vector) - 25rnd .45 ACP Vector Magazine (mw:vectormag) - .45 ACP Bullet (mw:bullet45acp) | D: 6.5
+		2, HK MP5A5 (mw:mp5a5) - 25rnd (mw:mp5a5mag) & 50rnd (mw:hk50drum) 9x19 HK Magazine - 9x19 Bullet (mw:bullet9x19mm) | D: 5
+		
+		ATTACHMENTS:
+			1, A, B, C, D, E
+			2, -
+			
+	RIFLES:
+		1, Kar-98 (mw:kar98k) - 7.92x57mm Bullet (mw:bullet792x57) | D: 27
+		2, M1903 Springfield (mw:springfield) - .30-06 Bullet (mw:bullet3006sprinfield) | D: 27
+		
+		ATTACHMENTS:
+			1, -
+			2, -
+
+	ASSAULT RIFLES:
+		1, M38 DMR (mw:m38_dmr) - 30rnd (mw:m4a1mag_2) & 50rnd (mw:stanag50) 5.56x45 NATO STANAG - 5.56x45 NATO Bullet (mw:bullet556x45) | D: 7
+		2, M4A1 (mw:m4a1) - 30rnd (mw:m4a1mag_2) & 50rnd (mw:stanag50) 5.56x45 NATO STANAG - 5.56x45 NATO Bullet (mw:bullet556x45) | D: 7
+		3, AK-101 (mw:ak101) - 30rnd (mw:ak101mag_2) & 60rnd (mw:ak60mag) 5.56x45 Magazine - 5.56x45 NATO Bullet (mw:bullet556x45) | D: 6.5
+		4, AK-12 (mw:izhmash_ak12) - 31rnd 5.45x39 (mw:ak12mag) - 5.45x39mm (mw:bullet545x39) | D: 7
+		
+		ATTACHMENTS:
+			1, A, C, D, E, H, M, N, O, P, Q, R
+			2, A, B, C, D, E, H, M
+			3, F, G, M
+			4, A, C, D, E, L, O, P, R
+
+	SNIPER RIFLES:
+		1, M40A6 (mw:m40a6) - 7rnd .308 Magazine (mw:m40a6mag_2) -  .308 Winchester Bullet (mw:bullet308winchester) | D: 32
+		2, VSS Vintorez (mw:vss_vintorez) - 20rnd 9x39 Magazine (vssvintorezmag_2) - 9x39 Bullet (mw:bullet9x39mm) | D: 13
+		
+		ATTACHMENTS:
+			1, C, D, E, H, O
+			2, F, G
+	
+*/
