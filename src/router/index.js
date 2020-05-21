@@ -7,6 +7,7 @@ import Login from '../views/Login';
 const NProgress = require('nprogress');
 
 import EmailVerification from '../views/user/EmailVerification';
+import newPassword from '../views/user/NewPassword';
 
 Vue.use(VueRouter)
 
@@ -30,6 +31,11 @@ Vue.use(VueRouter)
     path: '/user/verifyEmail',
     name: 'EmailVerification',
     component: EmailVerification
+  },
+  {
+    path: '/user/newPassword',
+    name: 'newPassword',
+    component: newPassword
   },
   {
     path: '/about',

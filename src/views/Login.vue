@@ -50,9 +50,11 @@
                             Belépés
                         </b-button>
                         <hr mb-3>
+                        <router-link to="user/newPassword">
                         <b-button @click="newPassword" block class="p-10" squared variant="outline-primary" align-v="center">
                             Elfelejtett jelszó
                         </b-button>
+                        </router-link>
                     </div>
 
                 </b-card-text>

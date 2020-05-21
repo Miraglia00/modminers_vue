@@ -2,8 +2,9 @@
   <div id="app">
     <LoadingSpinner :start="loadspin.val" />
     <PageSpinner :start="pagespin.val" />
-    <Navbar v-if="navbar.val" />
-    <router-view v-on:showMessage="showMessage" />
+    <Navbar :v-if="navbar.val" />
+    <NetworkError v-if="nerror" />
+    <router-view v-else v-on:showMessage="showMessage" />
   </div>
 </template>
 <style>
@@ -14,12 +15,14 @@ import Navbar from './components/Navbar';
 import Authentication from './api/Authentication'
 import LoadingSpinner from './components/LoadingSpinner';
 import PageSpinner from './components/PageSpinner';
+import NetworkError from './views/errors/NetworkError'
 
 export default {
   components:{
     Navbar,
     LoadingSpinner,
-    PageSpinner
+    PageSpinner,
+    NetworkError
   },
    data() {
     return {
@@ -33,7 +36,8 @@ export default {
       },
       navbar: {
         val: true
-      }
+      },
+      nerror: false
     }
   },
   provide() {
@@ -44,7 +48,11 @@ export default {
     };
   },
   mounted: async () => {
-    await Authentication.wakeUp();
+    const wake = await Authentication.wakeUp();
+    if(wake == false) {
+      console.log("hiba")
+      this.nerror = true;
+    }
   },
   methods: {
     showMessage(message) {

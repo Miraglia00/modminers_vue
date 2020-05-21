@@ -9,7 +9,15 @@ function login(payload) {
 }
 
 function wakeUp() {
-    return api().get('wakeup', {});
+    const res = api().get('wakeup', {})
+    .then(response => { 
+        return true;
+    })
+    .catch(error => {
+        if(error.message === "Network Error") {
+            return false
+        }
+    });
 }
 
 export default {

@@ -1,5 +1,22 @@
 <template>
 <b-container>
+  <b-row v-if="!message.error && isValid" align-v="center" style="min-height:100vh" class="text-center">
+        <b-col cols="12" offset="0" md="8" offset-md="2">
+            <b-jumbotron border-variant="success">
+                <template v-slot:header><h3 class="success">Sikeresen e-mail aktiválás!</h3></template>
+
+                <template v-slot:lead v-if="!message.error">
+                Köszönjük hogy aktiváltad e-mail címed. Ha adminjaink már elfogadták fiókod akkor be is tudsz jelentkezni, ha még nem akkor türelmedet kérjük.<br />
+                Ezt az ablakot már bezárhatod.
+                </template>
+                <template v-slot:lead v-else>
+                  {{message.error}}
+                </template>
+
+            </b-jumbotron>
+        </b-col>
+    </b-row>
+
   <b-row align-v="center" style="min-height:100vh">
     <b-col cols="12" offset="0" md="8" offset-md="2" lg="4" offset-lg="4">
         <b-card-group deck>
@@ -15,12 +32,15 @@
                     </h4>
                 </template>
                 <b-card-text>
+                  Elfelejtetted a jelszavad? Ha igen, használd a felhasználóneved
+                  és az e-mail címed egy jelszó készítéséhez.
+                  <hr>
                     <b-form-input
-                    v-on:keyup.enter="newpassword"
-                    v-model="psw_1"
-                    :state="psw_1State"
+                    v-on:keyup.enter="sendPswReset"
+                    v-model="username"
+                    :state="usernameState"
                     aria-describedby="input-live-help input-live-feedback"
-                    placeholder="Jelszó 1"
+                    placeholder="Felhasználónév"
                     trim
                     ></b-form-input>
 
@@ -29,11 +49,11 @@
                     </b-form-invalid-feedback>
 
                     <b-form-input
-                    v-on:keyup.enter="newpassword"
-                    v-model="psw_2"
-                    :state="psw_2State"
+                    v-on:keyup.enter="sendPswReset"
+                    v-model="email"
+                    :state="emailState"
                     aria-describedby="input-live-help input-live-feedback"
-                    placeholder="Jelszó 2"
+                    placeholder="E-mail cím"
                     trim
                     class="mt-3"
                     ></b-form-input>
@@ -43,7 +63,7 @@
                     </b-form-invalid-feedback>
 
                     <div class="mt-3">
-                        <b-button @click="newpassword" block class="p-10" squared variant="outline-primary" align-v="center">
+                        <b-button @click="sendPswReset" block class="p-10" squared variant="outline-primary" align-v="center">
                             Új jelszó!
                         </b-button>
                     </div>
@@ -58,24 +78,45 @@
 
 <script>
 
-import Authentication from '../api/Authentication';
+import UserFunctions from '../../api/UserFunctions';
 
 export default {
-  inject: ['mySpinner'],
+  inject: ['loadingSpinner', 'navBar'],
   data() {
     return {
-        psw_1: '',
-        psw_2: '',
-        psw_1State: null,
-        psw_2State: null,
-        errormsg: null
+        username: '',
+        email: '',
+        usernameState: null,
+        emailState: null,
+        errormsg: null,
+        message: {
+          error: null
+        },
+        isValid: false
     }
   },
+  mounted() {
+    this.navBar.val = false;
+  },
   methods: {
+    async sendPswReset() {
+        this.loadingSpinner.val = true;
+        try {
+          const send = UserFunctions.sendPswReset(
+            {
+              username: this.username,
+              email: this.email
+            }
+          );
+        } catch (err) {
+          this.loadingSpinner.val = false;
+          this.message.error = err.response.data
+        }
+    },
     async newpassword() {
-     this.mySpinner.val = true;
+     this.loadingSpinner.val = true;
      try {
-        const response = await Authentication.login({
+        const response = await UserFunctions.newpassword({
           username: this.username,
           password: this.password
         })
