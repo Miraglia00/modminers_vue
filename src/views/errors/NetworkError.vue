@@ -1,6 +1,6 @@
 <template>
 <b-container>
-    <b-row v-if="!message" align-v="center" style="min-height:100vh" class="text-center">
+    <b-row align-v="center" style="min-height:100vh" class="text-center">
         <b-col cols="12" offset="0" md="8" offset-md="2">
             <b-jumbotron border-variant="danger">
                 <template v-slot:header><h3 class="success">Váratlan hoba történt! :O</h3></template>
@@ -17,7 +17,6 @@
 
 <script>
 export default {
-
 }
 </script>
 

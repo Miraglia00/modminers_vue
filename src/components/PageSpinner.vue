@@ -22,7 +22,7 @@ export default {
         if(this.pageSpinner.timeout === true) {
           this.pageSpinner.val = false;
         }       
-      }, 1000);
+      }, 1500);
     }
 }
 </script>

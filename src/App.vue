@@ -2,9 +2,9 @@
   <div id="app">
     <LoadingSpinner :start="loadspin.val" />
     <PageSpinner :start="pagespin.val" />
-    <Navbar :v-if="navbar.val" />
-    <NetworkError v-if="nerror" />
-    <router-view v-else v-on:showMessage="showMessage" />
+    <Navbar v-if="navbar.val" />
+    <NetworkError v-if="neterror"/>
+    <router-view v-if="!neterror" v-on:showMessage="showMessage" />
   </div>
 </template>
 <style>
@@ -16,6 +16,8 @@ import Authentication from './api/Authentication'
 import LoadingSpinner from './components/LoadingSpinner';
 import PageSpinner from './components/PageSpinner';
 import NetworkError from './views/errors/NetworkError'
+
+import api from './api/api.js';
 
 export default {
   components:{
@@ -37,7 +39,7 @@ export default {
       navbar: {
         val: true
       },
-      nerror: false
+      neterror: false
     }
   },
   provide() {
@@ -47,12 +49,8 @@ export default {
       navBar: this.navbar
     };
   },
-  mounted: async () => {
-    const wake = await Authentication.wakeUp();
-    if(wake == false) {
-      console.log("hiba")
-      this.nerror = true;
-    }
+  mounted() {
+    this.checkNetwork();
   },
   methods: {
     showMessage(message) {
@@ -61,6 +59,24 @@ export default {
         variant: message.variant,
         solid: true
       })
+    },
+    checkNetwork() {
+      this.pagespin.val = true;
+      this.pagespin.timeout = false;
+      this.$nextTick(async function () {
+        const res = await api().get('wakeup', {})
+        .then(() => {
+            this.pagespin.timeout = true;
+        })
+        .catch(error => {
+            if(error.message === "Network Error") {
+              this.neterror = true;
+              this.navbar.val = false;
+              this.pagespin.val = false;
+              this.pagespin.timeout = true;
+            }
+        });
+      });
     }
   },
   }

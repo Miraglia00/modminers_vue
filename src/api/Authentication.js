@@ -8,14 +8,14 @@ function login(payload) {
     return api().post('user/login', payload)
 }
 
-function wakeUp() {
-    const res = api().get('wakeup', {})
-    .then(response => { 
-        return true;
+async function wakeUp() {
+    const res = await api().get('wakeup', {})
+    .then(() => { 
+        return 1;
     })
     .catch(error => {
         if(error.message === "Network Error") {
-            return false
+            console.log("networkerr");
         }
     });
 }
