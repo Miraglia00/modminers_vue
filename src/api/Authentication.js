@@ -4,8 +4,12 @@ function register (payload) {
     return api().post('user/register', payload)
 }
 
-function login(payload) {
-    return api().post('user/login', payload)
+async function login(payload) {
+    return await api().post('user/login', payload)
+}
+
+async function verifyT(token) {
+    return await api().post('auth/verifyToken', {token: token})
 }
 
 async function wakeUp() {
@@ -20,8 +24,14 @@ async function wakeUp() {
     });
 }
 
+async function logout() {
+    return true
+}
+
 export default {
     register,
     login,
-    wakeUp
+    wakeUp,
+    logout,
+    verifyT
 }

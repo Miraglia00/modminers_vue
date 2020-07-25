@@ -13,6 +13,7 @@
 <script>
 import Navbar from './components/Navbar';
 import Authentication from './api/Authentication'
+import UserFunc from './api/UserFunctions'
 import LoadingSpinner from './components/LoadingSpinner';
 import PageSpinner from './components/PageSpinner';
 import NetworkError from './views/errors/NetworkError'
@@ -39,7 +40,8 @@ export default {
       navbar: {
         val: true
       },
-      neterror: false
+      neterror: false,
+      noRed: ["EmailVerification", "newPassword", "SocketTest"]
     }
   },
   provide() {
@@ -50,7 +52,22 @@ export default {
     };
   },
   mounted() {
-    this.checkNetwork();
+    this.$nextTick(function () {
+       //this.checkNetwork();
+      if(this.neterror != true){
+        this.loadDep();
+
+        if(!this.$store.getters.loggedIn) {
+          this.navbar.val = false
+        }else{
+          this.navbar.val = true
+          this.$store.dispatch("CHECK_LOGOUT")
+        }
+      }
+    })
+  },
+  computed: {
+    loggedIn: () => this.$store.getters.loggedIn
   },
   methods: {
     showMessage(message) {
@@ -77,7 +94,72 @@ export default {
             }
         });
       });
+    },
+    loadDep(){
+      let success = false;
+      let errors = "";
+      let finished = 0;
+
+      this.pagespin.val = true
+      this.pagespin.timeout = false;
+      this.pagespin.text = "Adatok lekérdezése..."
+
+      this.$store.dispatch("ISADMIN")
+      .then(res => {
+        if(res === true) {
+          success = true
+        }
+      })
+      .catch(err => {
+        this.showMessage({message: "Hiba történt az admin validáció során! Error:" + err.message, title: "Hiba a függőségek betöltése közben!", variant: "danger"})
+      })
+      this.pagespin.text = "Játékos adatok lekérdezése..."
+      this.$store.dispatch("SET_USER_SKILLS")
+      .then(res => {
+        if(res === true) {
+          success = true
+        }
+      })
+      .catch(err => {
+        if(err == "timeout") {
+          success = false;
+          errors += "\n Nem sikerült lekérdezni a játékos adatokat!";
+        }else{
+          success = false;
+          errors += "\n A szerver válasza: error";
+        }
+      })
+      this.pagespin.text = "Skillek betöltése..."
+      this.$store.dispatch("GET_SKILLS")
+      .then(res => {
+        if(res === true) {
+          success = true
+        }
+      })
+      .catch(err => {
+        success = false;
+        errors += err.message;
+      })
+
+      if(success === true) {
+        this.pagespin.val = false
+        this.pagespin.timeout = true;
+      }else{
+        this.pagespin.val = false
+        this.pagespin.timeout = true;
+        console.log("Hiba")
+      }
+    },
+    redirect() {
+      if(!this.$store.getters.loggedIn) {
+        this.$router.replace("/login")
+      }
     }
   },
   }
 </script>
+<style >
+body {
+  height: 100%;;
+}
+</style>

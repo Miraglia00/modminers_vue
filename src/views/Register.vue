@@ -9,11 +9,19 @@
                 header-text-variant="white"
                 align="center"
             >
-                <template v-slot:header>
-                    <h4 class="mb-0">
-                      Regisztráció                      
-                    </h4>
-                </template>
+            <template v-slot:header>
+              <b-row>
+                <b-col xs="12" md="6" class="pr-0">
+                  <router-link to="/login">
+                    <b-button class="m-0" squared  block>Belépés</b-button>
+                  </router-link>
+                </b-col>
+
+                <b-col xs="12" md="6" class="pl-0">
+                    <b-button class="m-0" squared :pressed="true" block>Regisztráció</b-button>
+                </b-col>
+              </b-row>    
+            </template>   
                 <b-card-text>
                     <b-form-input
                     v-on:keyup.enter="register"
@@ -58,6 +66,8 @@
                         {{this.errormsg.password}}
                     </b-form-invalid-feedback>
 
+                    <b-form-select v-model="selected" :options="options" class="mt-3"></b-form-select>
+
                     <b-form-textarea
                     v-on:keyup.enter="register"
                     v-model="intro"
@@ -90,7 +100,7 @@
 import Authentication from '../api/Authentication';
 
 export default {
-  inject: ['loadingSpinner'],
+  inject: ['loadingSpinner', 'navBar'],
   data() {
     return {
         username: '',
@@ -102,8 +112,16 @@ export default {
         passwordState: null,
         introState: null,
         errormsg: null,
-        message: ''
+        message: '',
+        selected: 0,
+        options: [
+          { value: 0, text: 'Karaktered neme: Férfi' },
+          { value: 1, text: 'Karaktered neme: Nő' }
+        ]
     }
+  },
+  mounted() {
+    this.navBar.val = false
   },
   methods: {
     async register() {
@@ -113,7 +131,8 @@ export default {
           username: this.username,
           email: this.email,
           description: this.intro,
-          password: this.password
+          password: this.password,
+          sex: this.selected
         })
         this.loadingSpinner.val = false;
         this.message = response.data.message;
@@ -122,10 +141,10 @@ export default {
           message: "A regisztráció véglegesítéséhez megkell erősítened az e-mail címed és adminisztrátoraink elbírálják kérésed. Ezután már be is tudsz jelentekzni a weboldalra. :)",
           variant: "success"
         });
-        this.$router.replace('/');
+        this.$router.replace('/login');
          
       }catch(err) {
-        this.loadingSpinner.val = true;
+        this.loadingSpinner.val = false;
         this.errormsg = err.response.data
         this.usernameState = this.errormsg.username ? false : true;
         this.emailState = this.errormsg.email || this.errormsg.validemail ? false : true;
