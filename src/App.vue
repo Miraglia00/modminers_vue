@@ -80,6 +80,7 @@ export default {
     checkNetwork() {
       this.pagespin.val = true;
       this.pagespin.timeout = false;
+      this.navbar.val = false;
       this.$nextTick(async function () {
         const res = await api().get('wakeup', {})
         .then(() => {

@@ -15,12 +15,13 @@
 <script>
 export default {
     props: ['start'],
-    inject: ['pageSpinner'],
+    inject: ['pageSpinner', 'navBar'],
 
     mounted() {    
       setTimeout(() => {
         if(this.pageSpinner.timeout === true) {
           this.pageSpinner.val = false;
+          this.navBar.val = true;
         }       
       }, 1500);
     }
