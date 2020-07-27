@@ -3,11 +3,19 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Register from '../views/Register';
 import Login from '../views/Login';
+import SocketTest from '../views/SocketTest';
+import Logout from '../views/Logout';
+import Profile from '../views/user/Profile';
+import Adminpanel from '../views/admin/Adminpanel';
+import Users from '../views/admin/Users';
+
+import store from '../store/index'
 
 const NProgress = require('nprogress');
 
 import EmailVerification from '../views/user/EmailVerification';
 import newPassword from '../views/user/NewPassword';
+import UserFunc from '../api/UserFunctions'
 
 Vue.use(VueRouter)
 
@@ -20,12 +28,24 @@ Vue.use(VueRouter)
   {
     path: '/register',
     name: 'Register',
-    component: Register
+    component: Register,
+    beforeEnter: (to, from, next) => {
+      if(store.getters.loggedIn === false) next()
+      else next(false)
+    }
   },
   {
     path: '/login',
     name: 'Login',
-    component: Login
+    component: Login,
+    beforeEnter: (to, from, next) => {
+      if(store.getters.loggedIn === false) {
+        next()
+      }
+      else {
+        console.log("true login")
+      }
+    }
   },
   {
     path: '/user/verifyEmail',
@@ -36,6 +56,45 @@ Vue.use(VueRouter)
     path: '/user/newPassword',
     name: 'newPassword',
     component: newPassword
+  },
+  {
+    path: '/socket',
+    name: 'SocketTest',
+    component: SocketTest
+  },
+  {
+    path: '/logout',
+    name: 'Logout',
+    component: Logout,
+    beforeEnter: (to, from, next) => {
+      if(store.getters.loggedIn === true) {next()}
+      else {next({name: 'Login'})}
+    }
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile,
+    beforeEnter: (to, from, next) => {
+      if(store.getters.loggedIn === true) next()
+      else next(false)
+    }
+  },
+  {
+    path: '/adminpanel',
+    name: 'Adminpanel',
+    component: Adminpanel,
+    children: [
+      {
+        name: 'Users',
+        path: 'users',
+        component: Users
+      }
+    ]
+    /*beforeEnter: (to, from, next) => {
+      if(store.getters.loggedIn === true && store.getters.isAdmin === true) next()
+      else next(false)
+    }*/
   },
   {
     path: '/about',
@@ -54,12 +113,22 @@ const router = new VueRouter({
 })
 
 router.beforeResolve((to, from, next) => {
-  // If this isn't an initial page load.
-  if (to.name) {
-      // Start the route progress bar.
-      NProgress.start()
-  }
   next()
+  /*if(store.getters.loggedIn === true) {
+    store.dispatch("GET_SKILLS")
+      .then(res=> {
+        if(store.getters.getLogout) {
+          next({name: "Logout"})
+        }else {
+          console.log("meghiv")
+          next()
+        }
+      })
+      next()
+  }else{
+    console.log("not logged")
+    next({name: "Logout"})
+  }*/
 })
 
 router.afterEach((to, from) => {

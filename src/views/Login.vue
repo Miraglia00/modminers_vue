@@ -9,11 +9,19 @@
                 header-text-variant="white"
                 align="center"
             >
-                <template v-slot:header>
-                    <h4 class="mb-0">
-                      Belépés                      
-                    </h4>
-                </template>
+            <template v-slot:header>
+             <b-row>
+                  <b-col xs="12" md="6" class="pr-md-0">
+                      <b-button class="m-0" squared :pressed="true" block>Belépés</b-button>
+                  </b-col>
+
+                  <b-col xs="12" md="6" class="pl-md-0">
+                    <router-link to="/register">
+                      <b-button class="m-xs-auto" squared block>Regisztráció</b-button>
+                    </router-link>
+                  </b-col>
+              </b-row>    
+            </template>                
                 <b-card-text>
                     <b-form-input
                     v-on:keyup.enter="login"
@@ -40,7 +48,7 @@
                     ></b-form-input>
 
                     <b-form-invalid-feedback id="input-live-feedback" v-if="this.errormsg">
-                        {{this.errormsg.password}}<br /><br />
+                        {{this.errormsg.password}}
                         {{this.errormsg.email_notverified}}
                         {{this.errormsg.user_notverified}}
                     </b-form-invalid-feedback>
@@ -51,7 +59,7 @@
                         </b-button>
                         <hr mb-3>
                         <router-link to="user/newPassword">
-                        <b-button @click="newPassword" block class="p-10" squared variant="outline-primary" align-v="center">
+                        <b-button block class="p-10" squared variant="outline-primary" align-v="center">
                             Elfelejtett jelszó
                         </b-button>
                         </router-link>
@@ -70,7 +78,7 @@
 import Authentication from '../api/Authentication';
 
 export default {
-  inject: ['mySpinner'],
+  inject: ['loadingSpinner', 'navBar'],
   data() {
     return {
         username: '',
@@ -83,28 +91,32 @@ export default {
         message: ''
     }
   },
+  mounted() {
+    this.navBar.val = false;
+  },
   methods: {
     async login() {
-     this.mySpinner.val = true;
-     try {
-        const response = await Authentication.login({
+      this.loadingSpinner.val = true;
+      this.$store.dispatch('LOGIN', {
           username: this.username,
           password: this.password
-        })
-        this.mySpinner.val = false;
-        this.message = response.data.message;
+      })
+      .then(response => {
         this.$emit('showMessage', {
-          title: this.message,
+          title: response.data.message,
           message: "Üdvözöllek a weboldalon!",
           variant: "success"
         });
-        this.$router.replace('/');
-      }catch(err) {
-        this.mySpinner.val = false;
-        this.errormsg = err.response.data
-        this.usernameState = this.errormsg.username || this.errormsg.notverified ? false : true;
-        this.passwordState = this.errormsg.password || this.errormsg.notverified ? false : true;
-      }
+        this.loadingSpinner.val = false;
+        this.navBar.val = true;
+        this.$router.push('/');
+      })
+      .catch(err => {
+        this.loadingSpinner.val = false;
+        this.errormsg = err
+        this.usernameState = this.errormsg.username || this.errormsg.user_notverified ? false : true;
+        this.passwordState = this.errormsg.password || this.errormsg.user_notverified ? false : true;
+      })
     }
   }
 }
