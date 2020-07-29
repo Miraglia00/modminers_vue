@@ -21,7 +21,6 @@ export default {
       setTimeout(() => {
         if(this.pageSpinner.timeout === true) {
           this.pageSpinner.val = false;
-          this.navBar.val = true;
         }       
       }, 1500);
     }

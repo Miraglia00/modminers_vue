@@ -23,7 +23,11 @@ Vue.use(VueRouter)
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+    beforeEnter: (to, from, next) => {
+      if(store.getters.loggedIn === true) next()
+      else {next({name: 'Login'})}
+    }
   },
   {
     path: '/register',

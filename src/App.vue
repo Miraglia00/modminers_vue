@@ -38,7 +38,7 @@ export default {
         timeout: true
       },
       navbar: {
-        val: true
+        val: false
       },
       neterror: false,
       noRed: ["EmailVerification", "newPassword", "SocketTest"]
@@ -55,13 +55,13 @@ export default {
     this.$nextTick(function () {
        //this.checkNetwork();
       if(this.neterror != true){
-        this.loadDep();
-
-        if(!this.$store.getters.loggedIn) {
+        if(this.$store.getters.loggedIn === false) {
           this.navbar.val = false
+          this.pagespin.nav = false
         }else{
+          this.loadDep()
           this.navbar.val = true
-          this.$store.dispatch("CHECK_LOGOUT")
+          //this.$store.dispatch("CHECK_LOGOUT")
         }
       }
     })
@@ -97,59 +97,25 @@ export default {
       });
     },
     loadDep(){
-      let success = false;
-      let errors = "";
-      let finished = 0;
 
-      this.pagespin.val = true
-      this.pagespin.timeout = false;
       this.pagespin.text = "Adatok lekérdezése..."
-
       this.$store.dispatch("ISADMIN")
-      .then(res => {
-        if(res === true) {
-          success = true
-        }
-      })
       .catch(err => {
         this.showMessage({message: "Hiba történt az admin validáció során! Error:" + err.message, title: "Hiba a függőségek betöltése közben!", variant: "danger"})
       })
+
       this.pagespin.text = "Játékos adatok lekérdezése..."
       this.$store.dispatch("SET_USER_SKILLS")
-      .then(res => {
-        if(res === true) {
-          success = true
-        }
-      })
       .catch(err => {
-        if(err == "timeout") {
-          success = false;
-          errors += "\n Nem sikerült lekérdezni a játékos adatokat!";
-        }else{
-          success = false;
-          errors += "\n A szerver válasza: error";
-        }
-      })
-      this.pagespin.text = "Skillek betöltése..."
-      this.$store.dispatch("GET_SKILLS")
-      .then(res => {
-        if(res === true) {
-          success = true
-        }
-      })
-      .catch(err => {
-        success = false;
-        errors += err.message;
+        this.showMessage({message: "Hiba történt a felhasználó adatainak betöltése során! Error: " + err, title: "Hiba a függőségek betöltése közben!", variant: "danger"})
       })
 
-      if(success === true) {
-        this.pagespin.val = false
-        this.pagespin.timeout = true;
-      }else{
-        this.pagespin.val = false
-        this.pagespin.timeout = true;
-        console.log("Hiba")
-      }
+      this.pagespin.text = "Skillek betöltése..."
+      this.$store.dispatch("GET_SKILLS")
+      .catch(err => {
+        this.showMessage({message: "Hiba történt a skillek betöltése során! Error:" + err.message, title: "Hiba a függőségek betöltése közben!", variant: "danger"})
+      })
+
     },
     redirect() {
       if(!this.$store.getters.loggedIn) {
