@@ -8,6 +8,7 @@ import Logout from '../views/Logout';
 import Profile from '../views/user/Profile';
 import Adminpanel from '../views/admin/Adminpanel';
 import Users from '../views/admin/Users';
+import VerifyUsers from '../views/admin/VerifyUsers';
 
 import store from '../store/index'
 
@@ -15,7 +16,6 @@ const NProgress = require('nprogress');
 
 import EmailVerification from '../views/user/EmailVerification';
 import newPassword from '../views/user/NewPassword';
-import UserFunc from '../api/UserFunctions'
 
 Vue.use(VueRouter)
 
@@ -87,12 +87,15 @@ Vue.use(VueRouter)
   {
     path: '/adminpanel',
     name: 'Adminpanel',
-    component: Adminpanel,
+    components: { default: Adminpanel, a: Users },
     children: [
       {
         name: 'Users',
-        path: 'users',
-        component: Users
+        path: '',
+        components: {
+          users: Users,
+          verify_users: VerifyUsers
+        }
       }
     ]
     /*beforeEnter: (to, from, next) => {
@@ -117,22 +120,14 @@ const router = new VueRouter({
 })
 
 router.beforeResolve((to, from, next) => {
-  next()
-  /*if(store.getters.loggedIn === true) {
-    store.dispatch("GET_SKILLS")
-      .then(res=> {
-        if(store.getters.getLogout) {
-          next({name: "Logout"})
-        }else {
-          console.log("meghiv")
-          next()
-        }
-      })
+  store.dispatch("CHECK_LOGOUT")
+  .then(res => {
+    if(res === true && store.getters.loggedIn)
+      next({name: "Logout"})
+    else
       next()
-  }else{
-    console.log("not logged")
-    next({name: "Logout"})
-  }*/
+  })
+  .catch(err => console.log(err))
 })
 
 router.afterEach((to, from) => {

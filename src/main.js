@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import '@babel/polyfill'
 import 'mutationobserver-shim'
 import Vue from 'vue'
@@ -18,6 +19,7 @@ Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 Vue.use(ModalPlugin)
 Vue.use(cookies)
+Vue.use(_)
 
 Vue.use(vuescroll, {ops: {
 }

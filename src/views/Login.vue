@@ -96,6 +96,7 @@ export default {
   },
   methods: {
     async login() {
+
       this.loadingSpinner.val = true;
       this.$store.dispatch('LOGIN', {
           username: this.username,
@@ -110,12 +111,19 @@ export default {
         this.loadingSpinner.val = false;
         this.navBar.val = true;
         this.$router.push('/');
+        this.$emit('loadDep');
+
       })
       .catch(err => {
         this.loadingSpinner.val = false;
         this.errormsg = err
         this.usernameState = this.errormsg.username || this.errormsg.user_notverified ? false : true;
         this.passwordState = this.errormsg.password || this.errormsg.user_notverified ? false : true;
+        this.$emit('showMessage', {
+          title: err,
+          message: "Hiba történt a belépés során!",
+          variant: "danger"
+        });
       })
     }
   }

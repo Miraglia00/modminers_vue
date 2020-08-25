@@ -36,6 +36,34 @@ async function setSkin(id, skinid) {
     return await api().patch('user/update/' + id, {skin: skinid, 'permissions.skin': false})
 }
 
+function getServerRang(rang) {
+    let rang_s = ""
+    switch(rang) {
+      case -1: 
+        rang_s = false;
+        break;
+      case 0:
+        rang_s = "Játékos";
+        break;
+      case 1:
+        rang_s = "VIP";
+        break;
+      case 2:
+        rang_s = "Moderátor";
+        break;
+      case 3:
+        rang_s = "Admin";
+        break;
+      case 4:
+        rang_s = "Tulajdonos";
+        break;
+      default:
+        rang_s = true
+        break;
+    }
+    return rang_s
+}
+
 export default {
     verifyEmail,
     newPassword,
@@ -45,5 +73,6 @@ export default {
     getUser,
     setLogout,
     getSkins,
-    setSkin
+    setSkin,
+    getServerRang
 }

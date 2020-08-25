@@ -15,19 +15,18 @@
 
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto" v-if="loggedIn">
-        <b-navbar-nav class="d-block d-lg-none">
-          <b-button squared variant="secondary outline-info text-white" class="w-50">Profil <span class="small" v-if="countNotfications > 0"><b-badge variant="danger">{{countNotfications}}</b-badge></span></b-button>
-          <b-button squared variant="secondary outline-info text-white" class="w-50">Kilépés</b-button>
+        <b-navbar-nav class="d-block d-lg-none mt-3">
+          <b-button @click="(current != 'Profile') ? $router.push('/profile') : ''" squared variant="secondary outline-info text-white" class="w-50">Profil <span class="small" v-if="countNotfications > 0"><b-badge variant="danger">{{countNotfications}}</b-badge></span></b-button>
+          <b-button @click="(current != 'Logout') ? $router.push('/logout') : ''" squared variant="secondary outline-info text-white" class="w-50">Kilépés</b-button>
         </b-navbar-nav>
-
         <b-dropdown variant="primary" class="text-center d-none d-lg-block" v-if="loggedIn" offset="50" right> 
             <template v-slot:button-content>
               {{username}} <span class="small noti" v-if="countNotfications > 0"><b-badge variant="danger">{{countNotfications}}</b-badge></span>
             </template>
-            <b-dropdown-item class="drop" @click="$router.push('/profile')">Profil 
+            <b-dropdown-item class="drop" @click="(current != 'Profile') ? $router.push('/profile') : ''">Profil 
               <span class="small" v-if="countNotfications > 0"><b-badge variant="danger">{{countNotfications}}</b-badge></span>
             </b-dropdown-item>
-            <b-dropdown-item class="drop" @click="$router.push('/logout')">Kilépés</b-dropdown-item>
+            <b-dropdown-item class="drop"  @click="(current != 'Logout') ? $router.push('/logout') : ''">Kilépés</b-dropdown-item>
         </b-dropdown>
         
       </b-navbar-nav>
@@ -53,6 +52,9 @@ export default {
     countNotfications() {
       const count = this.$store.getters.getUserSkills.tp
       return count
+    },
+    current() {
+      return this.$router.history.current.name
     }
   }
 

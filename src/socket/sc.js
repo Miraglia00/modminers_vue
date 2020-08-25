@@ -1,4 +1,6 @@
+
 const host = "ws://94.248.206.112:3433"
+
 const timeout = 5000
 
 async function getPlayerData (token, name) {
@@ -37,7 +39,25 @@ async function learnSkill (token, name, skillname) {
   });
 }
 
-export default {getPlayerData, learnSkill}
+async function setSkin (token, name, skinid) {
+  var connection = new WebSocket(host);
+  var msg = token + ">set_skin-"+name+">"+skinid;
+  return new Promise((resolve, reject) => {
+    if(connection.readyState == WebSocket.OPEN) {
+      connection.send(msg);
+      connection.onmessage = function (e) {
+        if(e.data == "error"){
+          reject(false)
+        }else{
+          resolve(e.data)
+        }
+      }
+    }
+    setTimeout(() => {reject("close")}, timeout)
+  });
+}
+
+export default {getPlayerData, learnSkill, setSkin}
 
 
 /*

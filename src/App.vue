@@ -4,7 +4,7 @@
     <PageSpinner :start="pagespin.val" />
     <Navbar v-if="navbar.val" />
     <NetworkError v-if="neterror"/>
-    <router-view v-if="!neterror" v-on:showMessage="showMessage" />
+    <router-view v-if="!neterror" v-on:showMessage="showMessage" v-on:loadDep="loadDep"/>
   </div>
 </template>
 <style>
@@ -54,14 +54,12 @@ export default {
   mounted() {
     this.$nextTick(function () {
        //this.checkNetwork();
-      if(this.neterror != true){
-        if(this.$store.getters.loggedIn === false) {
+      if(this.neterror == true){
           this.navbar.val = false
-          this.pagespin.nav = false
-        }else{
-          this.loadDep()
-          this.navbar.val = true
-          //this.$store.dispatch("CHECK_LOGOUT")
+      }else{
+        if(this.$store.getters.loggedIn){
+           this.navbar.val = true;
+           this.loadDep()
         }
       }
     })
@@ -98,6 +96,8 @@ export default {
     },
     loadDep(){
 
+      if(this.$store.getters.loggedIn == false) return false
+
       this.pagespin.text = "Adatok lekérdezése..."
       this.$store.dispatch("ISADMIN")
       .catch(err => {
@@ -110,7 +110,7 @@ export default {
         this.showMessage({message: "Hiba történt a felhasználó adatainak betöltése során! Error: " + err, title: "Hiba a függőségek betöltése közben!", variant: "danger"})
       })
 
-      this.pagespin.text = "Skillek betöltése..."
+      this.pagespin.text = "Adatok betöltése..."
       this.$store.dispatch("GET_SKILLS")
       .catch(err => {
         this.showMessage({message: "Hiba történt a skillek betöltése során! Error:" + err.message, title: "Hiba a függőségek betöltése közben!", variant: "danger"})
@@ -127,6 +127,6 @@ export default {
 </script>
 <style >
 body {
-  height: 100%;;
+  height: 100%;
 }
 </style>

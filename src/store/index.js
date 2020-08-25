@@ -45,8 +45,13 @@ export default new Vuex.Store({
             state.token = null
         },
         destroyUserInfo(state) {
-            state.user.id = null,
+            state.user.id = null
             state.user.username = null
+            state.user.skin = null
+            state.user.sex = null
+            state.user.email = null
+            state.user.server = null
+            state.admin = null
         },
         setAdmin(state,admin) {
             state.admin = admin;
@@ -65,6 +70,9 @@ export default new Vuex.Store({
         },
         destroyUserSkills(state) {
             state.userSkills.tp = null
+        },
+        destroySkills(state) {
+            state.skills = null
         }
     },
     actions: {
@@ -74,6 +82,7 @@ export default new Vuex.Store({
                 .then(res => {
                     const token = res.data.token;
                     const user = res.data.user
+                    const temp_res = res
                     cookies.set('token', token)
                     cookies.set('userID', user._id)
                     cookies.set('username', user.username)
@@ -83,10 +92,20 @@ export default new Vuex.Store({
                     cookies.set('server', user.s_rang)
                     context.commit('setToken', token)
                     context.commit('setUserInfo', user)
-                    resolve(res)
+
+                    Auth.verifyT(context.getters.getToken)
+                    .then(res => {
+                        context.commit('setAdmin', res.data.admin)
+                        resolve(temp_res)
+                    })
+                    .catch(err => {
+                        context.commit('setAdmin', false)
+                        reject(err.message)
+                    })
                 })
                 .catch(err => {
-                    reject(err.response.data)
+                    console.log("reject" + err)
+                    reject(err)
                 })
             });
         },
@@ -105,6 +124,7 @@ export default new Vuex.Store({
                         context.commit('destroyToken')
                         context.commit('destroyUserInfo')
                         context.commit('destroyUserSkills')
+                        context.commit('destroySkills')
                         resolve(res)
                     })
                     .catch(err => {
@@ -118,7 +138,8 @@ export default new Vuex.Store({
                         context.commit('destroyToken')
                         context.commit('destroyUserSkills')
                         context.commit('destroyUserInfo')
-                        reject(err.response.data)
+                        context.commit('destroySkills')
+                        reject(err)
                     })
                 });
             }
@@ -187,15 +208,18 @@ export default new Vuex.Store({
         SET_SKIN(context, payload) {
             return new Promise((resolve,reject) =>{
                 if(payload != null){
-                   UserFunc.setSkin(context.getters.getUser.id, payload.skin)
+                    Socket.setSkin(context.getters.getToken, context.getters.getUsername, payload.skin)
                     .then((res) => {
-                        context.commit('updateSkin', payload.skin)
-                        cookies.set('skin', payload.skin)
-                        resolve(res)
-                    })
-                    .catch((err) => {
-                        reject(err)
-                    })
+                        UserFunc.setSkin(context.getters.getUser.id, payload.skin)
+                        .then((res) => {
+                            context.commit('updateSkin', payload.skin)
+                            cookies.set('skin', payload.skin)
+                            resolve(res)
+                        })
+                        .catch((err) => {
+                            reject(err)
+                        })
+                    }).catch(err => console.log(err))
                 }
             })
         }

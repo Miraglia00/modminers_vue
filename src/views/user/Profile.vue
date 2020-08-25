@@ -24,7 +24,7 @@
               <b-list-group-item class="w-100" v-else>Szerver rang: <span class="text-danger">{{getServerRang ? "Hiba!" : "Bannolt játékos!"}}</span></b-list-group-item>
               <b-list-group-item class="w-100">-</b-list-group-item>
            </b-list-group>
-           <b-button block class="p-10 mt-1 w-50 text-center " squared variant="outline-primary" align-v="center" v-b-modal.skin-modal>
+           <b-button block class="p-10 mt-1 w-50 text-center" squared variant="outline-primary" align-v="center" v-b-modal.skin-modal>
               Kinézet váltás
             </b-button>
          </b-col>
@@ -255,7 +255,7 @@ export default {
             message: "Mivel még nem játszottál a szerveren így nem sikerült lekérni az adatokat. Ha te már játszottál és ez a hiba fennáll vedd fel a kapcsolatot a vezetőséggel.",
             variant: "danger"
             });
-          }else if(err == "close"){
+          }else if(err == "timeout"){
             this.$emit('showMessage', {
             title: "Adat lekérési hiba!",
             message: "Nem sikerült kapcsolatot létesíteni a kiszolgáló szerverrel. Kérlek frissítsd az oldalt, és ha a hiba fennáll, vedd fel a kapcsolatot a vezetőséggel.",
