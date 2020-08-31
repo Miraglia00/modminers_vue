@@ -15,6 +15,11 @@ export default {
             this.$emit('showMessage', message)
         }
     },
+    mounted() {
+        if(this.$store.getters.isAdmin != true) {
+            this.$router.push('/')
+        }
+    }
 }
 </script>
 

@@ -81,7 +81,7 @@ Vue.use(VueRouter)
     component: Profile,
     beforeEnter: (to, from, next) => {
       if(store.getters.loggedIn === true) next()
-      else next(false)
+      else {next({name: 'Login'})}
     }
   },
   {
@@ -97,11 +97,13 @@ Vue.use(VueRouter)
           verify_users: VerifyUsers
         }
       }
-    ]
-    /*beforeEnter: (to, from, next) => {
-      if(store.getters.loggedIn === true && store.getters.isAdmin === true) next()
-      else next(false)
-    }*/
+    ],
+    beforeEnter: (to, from, next) => {
+      if(store.getters.loggedIn === true) {
+        next()
+      }
+      else {next({name: 'Login'})}
+    }
   },
   {
     path: '/about',

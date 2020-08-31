@@ -45,7 +45,7 @@
        <template v-slot:footer>
         <div class="d-flex justify-content-between align-items-center">
             <b>Összes játékos: {{getCount}}</b> | <b class="text-success">Elfogadott: {{getAccepted}}</b> | <b class="text-light">Kérdéses: {{getPending}}</b> | <b class="text-danger">Elutasított: {{getRejected}}</b>
-            <b-button w-25 class="p-10" squared variant="outline-primary" align-v="center" @click="savePlayers()">
+            <b-button w-25 class="p-10" squared variant="outline-primary" align-v="center" @click="updateAllPlayer()">
                 <b>Mentés!</b>
             </b-button>
         </div>
@@ -84,7 +84,8 @@ export default {
           allPlayer: [],
           visible: true,
           states: [],
-          selected: {}
+          selected: {},
+          saved: 0
       }
     },
     mounted(){
@@ -112,12 +113,34 @@ export default {
         return UserFunc.getServerRang(rang)
       },
       fillStates() {
+        this.states = []
           this.allPlayer.forEach(element => {
               this.states.push({_id: element._id, username: element.username, desc: element.description, status: element.permissions.verified, reg_date: element.reg_date, def:element.permissions.verified})
           })
-      }
-      //Kiválasztva / Mentésre szánt jelölése
+      },
+      async updatePlayer() {
+        this.states.forEach( async (e)=> {
+          if(e.def != e.status) {
+            await AdminFunc.updatePlayer(e._id, {'permissions.verified': e.status})
+            this.saved++
+          }
+        })
 
+        this.getPlayers();
+      },
+      //TODO: Make asynchronous update
+      async updateAllPlayer() {
+        if(this.$store.getters.isAdmin) {
+          this.updatePlayer()
+          .then(res => {
+            this.$emit('showMessage', {
+            title: "Sikeres mentés!",
+            message: this.saved + " fiók módosítva!",
+            variant: "success"
+          })
+          })
+        }
+      }
     },
     computed: {
         getCount(){

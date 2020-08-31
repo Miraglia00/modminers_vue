@@ -52,14 +52,14 @@ export default {
     };
   },
   mounted() {
-    this.$nextTick(function () {
+    this.$nextTick(async function () {
        //this.checkNetwork();
       if(this.neterror == true){
           this.navbar.val = false
       }else{
         if(this.$store.getters.loggedIn){
            this.navbar.val = true;
-           this.loadDep()
+           await this.loadDep()
         }
       }
     })
@@ -94,7 +94,7 @@ export default {
         });
       });
     },
-    loadDep(){
+    async loadDep(){
 
       if(this.$store.getters.loggedIn == false) return false
 
