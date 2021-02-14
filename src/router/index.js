@@ -9,6 +9,9 @@ import Profile from '../views/user/Profile';
 import Adminpanel from '../views/admin/Adminpanel';
 import Users from '../views/admin/Users';
 import VerifyUsers from '../views/admin/VerifyUsers';
+import PageSettings from '../views/admin/PageSettings';
+
+import Auth from '../api/Authentication'
 
 import store from '../store/index'
 
@@ -35,7 +38,7 @@ Vue.use(VueRouter)
     component: Register,
     beforeEnter: (to, from, next) => {
       if(store.getters.loggedIn === false) next()
-      else next(false)
+      else next({name: "Home"})
     }
   },
   {
@@ -47,7 +50,7 @@ Vue.use(VueRouter)
         next()
       }
       else {
-        console.log("true login")
+        next({name: "Home"})
       }
     }
   },
@@ -86,21 +89,23 @@ Vue.use(VueRouter)
   },
   {
     path: '/adminpanel',
-    name: 'Adminpanel',
-    components: { default: Adminpanel, a: Users },
+    component: Adminpanel,
     children: [
       {
         name: 'Users',
         path: '',
         components: {
           users: Users,
-          verify_users: VerifyUsers
+          verify_users: VerifyUsers,
+          page_settings: PageSettings
         }
       }
     ],
     beforeEnter: (to, from, next) => {
-      if(store.getters.loggedIn === true) {
-        next()
+      if(store.getters.loggedIn && store.getters.isAdmin) {
+        Auth.verifyT(store.getters.getToken)
+        .then(res => next())
+        .catch((err) => {next({name: 'Login'}); console.log(err)})
       }
       else {next({name: 'Login'})}
     }
@@ -126,8 +131,13 @@ router.beforeResolve((to, from, next) => {
   .then(res => {
     if(res === true && store.getters.loggedIn)
       next({name: "Logout"})
-    else
+    else {
+      if(store.getters.loggedIn) {
+        store.dispatch("SET_NOTIFICATION_COUNTS")
+        store.dispatch("GET_SETTINGS")
+      }
       next()
+    }
   })
   .catch(err => console.log(err))
 })

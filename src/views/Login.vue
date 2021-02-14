@@ -103,6 +103,7 @@ export default {
           password: this.password
       })
       .then(response => {
+        console.log("Sikeres login:" + response)
         this.$emit('showMessage', {
           title: response.data.message,
           message: "Üdvözöllek a weboldalon!",
@@ -115,15 +116,11 @@ export default {
 
       })
       .catch(err => {
+        console.log("Hiba loginnal:" + err)
         this.loadingSpinner.val = false;
-        this.errormsg = err
+        this.errormsg = err.data
         this.usernameState = this.errormsg.username || this.errormsg.user_notverified ? false : true;
         this.passwordState = this.errormsg.password || this.errormsg.user_notverified ? false : true;
-        this.$emit('showMessage', {
-          title: err,
-          message: "Hiba történt a belépés során!",
-          variant: "danger"
-        });
       })
     }
   }

@@ -6,25 +6,28 @@
 
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
-        <b-nav-item><router-link to="/">Főoldal</router-link></b-nav-item>
-        <b-nav-item><router-link to="/rules">Szabályzat</router-link></b-nav-item>
-        <b-nav-item><router-link to="/help">Segédletek</router-link></b-nav-item>
-        <b-nav-item><router-link to="/faq">GYIK</router-link></b-nav-item>
-        <b-nav-item v-if="this.$store.getters.isAdmin"><router-link to="/adminpanel">Adminpanel</router-link></b-nav-item>
+        <b-nav-item><router-link to="/" exact>Főoldal</router-link></b-nav-item>
+        <b-nav-item><router-link to="/rules" exact>Szabályzat</router-link></b-nav-item>
+        <b-nav-item><router-link to="/help" exact>Segédletek</router-link></b-nav-item>
+        <b-nav-item><router-link to="/faq" exact>GYIK</router-link></b-nav-item>
+        <b-nav-item v-if="this.$store.getters.isAdmin">
+          <router-link to="/adminpanel" exact>Adminpanel</router-link>
+          <span class="small admin-noti"><b-badge v-if="countNotifications.admin && countNotifications.admin.all > 0" variant="danger">{{countNotifications.admin.all}}</b-badge></span>
+        </b-nav-item>
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto" v-if="loggedIn">
         <b-navbar-nav class="d-block d-lg-none mt-3">
-          <b-button @click="(current != 'Profile') ? $router.push('/profile') : ''" squared variant="secondary outline-info text-white" class="w-50">Profil <span class="small" v-if="countNotfications > 0"><b-badge variant="danger">{{countNotfications}}</b-badge></span></b-button>
+          <b-button @click="(current != 'Profile') ? $router.push('/profile') : ''" squared variant="secondary outline-info text-white" class="w-50">Profil <span class="small" v-if="countNotifications.profile > 0"><b-badge variant="danger">{{countNotifications.profile}}</b-badge></span></b-button>
           <b-button @click="(current != 'Logout') ? $router.push('/logout') : ''" squared variant="secondary outline-info text-white" class="w-50">Kilépés</b-button>
         </b-navbar-nav>
         <b-dropdown variant="primary" class="text-center d-none d-lg-block" v-if="loggedIn" offset="50" right> 
             <template v-slot:button-content>
-              {{username}} <span class="small noti" v-if="countNotfications > 0"><b-badge variant="danger">{{countNotfications}}</b-badge></span>
+              {{username}} <span class="small noti" v-if="countNotifications.profile > 0"><b-badge variant="danger">{{countNotifications.profile}}</b-badge></span>
             </template>
             <b-dropdown-item class="drop" @click="(current != 'Profile') ? $router.push('/profile') : ''">Profil 
-              <span class="small" v-if="countNotfications > 0"><b-badge variant="danger">{{countNotfications}}</b-badge></span>
+              <span class="small" v-if="countNotifications.profile > 0"><b-badge variant="danger">{{countNotifications.profile}}</b-badge></span>
             </b-dropdown-item>
             <b-dropdown-item class="drop"  @click="(current != 'Logout') ? $router.push('/logout') : ''">Kilépés</b-dropdown-item>
         </b-dropdown>
@@ -35,6 +38,7 @@
 </template>
 
 <script>
+import AdminFunc from '../api/AdminFunctions';
 export default {
   data() {
     return {
@@ -49,8 +53,8 @@ export default {
     username() {
       return this.$store.getters.getUsername
     },
-    countNotfications() {
-      const count = this.$store.getters.getUserSkills.tp
+    countNotifications() {
+      const count = this.$store.getters.notificationCount
       return count
     },
     current() {
@@ -93,11 +97,5 @@ a:hover {
 
 .navbar {
   font-size: 16px;
-}
-
-.noti {
-  position: relative;
-  left: 28px;
-  top:-15px
 }
 </style>

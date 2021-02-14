@@ -51,15 +51,22 @@ export default {
     },
     mounted() {
       this.$nextTick(async function () {
-        this.loadingSpinner.val = true;
-        PageFunctions.getPosts()
-        .then(res => {
-          this.posts = res.data.data
-          this.loadingSpinner.val = false;
-        })
-        .catch(err => {
-          console.log(err)
-        })
+        if(this.$store.getters.loggedIn){
+          this.loadingSpinner.val = true;
+          PageFunctions.getPosts()
+          .then(res => {
+            this.posts = res.data.data
+            this.loadingSpinner.val = false;
+          })
+          .catch(err => {
+            this.loadingSpinner.val = false;
+            this.$emit('showMessage', {
+              title: "Nem sikerült betölteni a Facebook posztokat!",
+              message: "Egy hiba folytán nem sikerült kapcsolatba lépni a Facebook API-jával. Hiba: " + err.message,
+              variant: "danger"
+            })
+          })
+        }
       })
     },
   destroyed() {

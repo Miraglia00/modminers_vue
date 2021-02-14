@@ -5,6 +5,11 @@ async function getUsername(id) {
     return user.username
 }
 
+async function getId(username) {
+    return api().get('user/getid/' + username)
+}
+
 export default {
-    getUsername
+    getUsername,
+    getId
 }

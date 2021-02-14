@@ -81,7 +81,7 @@
               </b-tr>
             </b-thead>
             <b-tbody>
-              <b-tr v-for="player in orderedPlayers" :key="player._id">
+              <b-tr v-for="player in orderedPlayers" :key="player._id" :variant="player.permissions.server === -1 ? 'danger' : ''">
                 <b-td class="d-none d-md-block"><b-icon-eye v-b-tooltip.hover :title="player._id" class="icon"></b-icon-eye></b-td>
                 <b-td>{{player.username}}</b-td>
                 <b-td class="d-none d-md-block">{{getRang(player.permissions.server)}}</b-td>
@@ -169,10 +169,6 @@
 
     <b-row>
       <b-col xs="12" md="6" class="d-flex justify-content-between align-items-center">
-        <span>Fiók megerősítés:</span>
-        <b-form-checkbox :disabled="getDisable" v-model="form.acc_ver" switch size="lg" class="mb-2"></b-form-checkbox>
-      </b-col>
-      <b-col xs="12" md="6" class="d-flex justify-content-between align-items-center">
         <span>E-mail megerősítés:</span> 
         <span class="d-flex justify-content-between align-items-center">
           <b-icon-eye v-b-tooltip.hover :title="form.email_code" class="icon mr-3"></b-icon-eye>
@@ -243,7 +239,6 @@
         </b-button>
       </b-col>
     </b-row>
-    {{edit}}
 
     <template v-slot:modal-footer="{close}" class="mt-5">
       <b-button w-25 class="p-10" squared variant="outline-primary" align-v="center" @click="updatePlayer()">
@@ -269,7 +264,6 @@ export default {
     inject: ['loadingSpinner'],
     data() {
       return {
-        allPlayer: [],
         visible: true,
         edit: {},
         form: {
@@ -278,7 +272,6 @@ export default {
           email: "",
           email_ver: null,
           email_code: "",
-          acc_ver: null,
           admin: null,
           server: null,
           server_options: [
@@ -306,24 +299,10 @@ export default {
       }
     },
     mounted(){
-      this.loadingSpinner.val = true;
-      this.getPlayers()
-      
     },
     methods: {
-      getPlayers() {
-        AdminFunc.getAllPlayer()
-        .then(res => {
-          if(res.data) {
-            this.allPlayer = res.data
-          }
-          this.loadingSpinner.val = false;
-        })
-        .catch(err => {
-          console.log(err)
-          this.loadingSpinner.val = false;
-        })
-
+      getPlayers(){
+        this.$store.dispatch('GET_ALL_PLAYER')
       },
       getRang(rang) {
         return UserFunc.getServerRang(rang)
@@ -334,7 +313,6 @@ export default {
         this.form.email = player.email.email,
         this.form.email_ver = player.email.verified,
         this.form.email_code = player.email.ver_code,
-        this.form.acc_ver = player.permissions.verified,
         this.form.admin = player.permissions.admin,
         this.form.server = player.permissions.server,
         this.form.skin = player.skin,
@@ -369,7 +347,7 @@ export default {
                 variant: "danger"
               });
             })
-            return this.getPlayers();
+            return this.getPlayers()
           }
 
           this.form.logout = this.form.banned == true ? true : this.form.logout;
@@ -379,7 +357,6 @@ export default {
             username: this.form.username,
             'email.email': this.form.email,
             'email.verified': this.form.email_ver,
-            'permissions.verified': this.form.acc_ver,
             'permissions.admin': this.form.admin,
             'permissions.server': this.form.server,
             'permissions.skin': this.form.skin_change,
@@ -405,7 +382,7 @@ export default {
             });
           })
 
-          return this.getPlayers();
+          return this.getPlayers()
 
         }
       },
@@ -441,6 +418,9 @@ export default {
       }
     },
     computed: {
+      allPlayer() {
+        return this.$store.getters.allPlayer
+      },
       getCount(){
         return this.allPlayer.length;
       },

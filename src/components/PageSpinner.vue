@@ -36,7 +36,7 @@ export default {
     flex-direction: column
 }
 .spin {
-    z-index: 10;
+    z-index: 9999;
     height: 100%;
     width: 100%;
     background-color:rgb(34,34,34);

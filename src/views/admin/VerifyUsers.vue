@@ -81,7 +81,6 @@ export default {
     inject: ['loadingSpinner'],
     data() {
       return {
-          allPlayer: [],
           visible: true,
           states: [],
           selected: {},
@@ -89,25 +88,16 @@ export default {
       }
     },
     mounted(){
-      this.loadingSpinner.val = true;
-      this.getPlayers()
-      
+      this.$nextTick(async function () {
+        await this.fillStates();
+      })
     },
     methods: {
-      getPlayers() {
-        AdminFunc.getAllPlayer()
+      getPlayers(){
+        this.$store.dispatch('GET_ALL_PLAYER')
         .then(res => {
-          if(res.data) {
-            this.allPlayer = res.data
-            this.fillStates(this.allPlayer)
-          }
-          this.loadingSpinner.val = false;
+          this.fillStates()
         })
-        .catch(err => {
-          console.log(err)
-          this.loadingSpinner.val = false;
-        })
-
       },
       getRang(rang) {
         return UserFunc.getServerRang(rang)
@@ -121,12 +111,19 @@ export default {
       async updatePlayer() {
         this.states.forEach( async (e)=> {
           if(e.def != e.status) {
-            await AdminFunc.updatePlayer(e._id, {'permissions.verified': e.status})
-            this.saved++
+            AdminFunc.updatePlayer(e._id, {'permissions.verified': e.status})
+            .then(res => {
+              this.saved++
+            })
+            .catch(err => {
+              this.$emit('showMessage', {
+                title: "Sikertelen mentés!",
+                message: err.data.message || "Váratlan hiba a mentés során. Próbáld újra késöbb!",
+                variant: "danger"
+              })
+            })
           }
         })
-
-        this.getPlayers();
       },
       //TODO: Make asynchronous update
       async updateAllPlayer() {
@@ -134,15 +131,20 @@ export default {
           this.updatePlayer()
           .then(res => {
             this.$emit('showMessage', {
-            title: "Sikeres mentés!",
-            message: this.saved + " fiók módosítva!",
-            variant: "success"
-          })
+              title: "Sikeres mentés!",
+              message: "A folyamat a háttérben zajlik, a végeredményt a táblázatban láthatod!",
+              variant: "success"
+            })
+            this.$store.dispatch("SET_NOTIFICATION_COUNTS")
+            this.getPlayers()
           })
         }
       }
     },
     computed: {
+        allPlayer() {
+          return this.$store.getters.allPlayer
+        },
         getCount(){
             return this.allPlayer.length;
         },

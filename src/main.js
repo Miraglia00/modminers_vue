@@ -12,6 +12,7 @@ import router from './router'
 import store from './store/index';
 import cookies from 'vue-cookies'
 import vuescroll from 'vuescroll';
+import fab from 'vue-fab';
 
 Vue.config.productionTip = false
 
@@ -20,6 +21,7 @@ Vue.use(IconsPlugin)
 Vue.use(ModalPlugin)
 Vue.use(cookies)
 Vue.use(_)
+Vue.component('fab', fab)
 
 Vue.use(vuescroll, {ops: {
 }

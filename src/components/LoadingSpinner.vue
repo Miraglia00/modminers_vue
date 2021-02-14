@@ -25,7 +25,7 @@ export default {
     height: 100vh;
 }
 .spin {
-    z-index: 10;
+    z-index: 9999;
     height: 100%;
     width: 100%;
     background-color: rgba(0,0,0,0.5);

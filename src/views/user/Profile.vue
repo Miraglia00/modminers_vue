@@ -199,6 +199,7 @@
 
 import Socket from '../../socket/sc';
 import Func from '../../api/UserFunctions';
+import skin from '../../plugins/skin';
 
 export default {
   inject: ['loadingSpinner'],
@@ -310,11 +311,14 @@ export default {
             }
         },
       getSkins() {
-        Func.getSkins(this.$store.getters.getUser.sex)
+        let skinCounts = skin.read("http://www.modminers.hu/skins/all_skins/counts.txt")
+        console.log(skinCounts)
+
+        /*Func.getSkins(this.$store.getters.getUser.sex)
         .then(res => {
           this.skins = (res.data.sort((a,b) => a.id-b.id))
         })
-        .catch(err => console.log(err))
+        .catch(err => console.log(err))*/
         
       },
       getSkinchange() {
@@ -323,7 +327,7 @@ export default {
         .catch(err => {console.log(err); this.skinchange = false})
       },
       saveSkin(skin) {
-        this.$store.dispatch("SET_SKIN", {skin:skin})
+        this.$store.dispatch("SET_SKIN", {skin:skin, sex: this.$store.getters.getUser.sex})
         .then(res =>{
           this.$emit('showMessage', {
             title: "Sikeres skin váltás!",
@@ -358,17 +362,15 @@ export default {
     },
     computed: {
       AvalaibleSkills() {
-        var self = this;
         let a_skills = []
-        const store_skills = self.skills
-        const user = self.userData
-        if(user){
+        const store_skills = this.$store.getters.getSkills
+        const user = this.userData
 
-          for( var i=0; i<store_skills.length; i++){
+        if(user){
+          for(let i=0; i<store_skills.length; i++){
             if(store_skills[i].r_name in user)
               a_skills.push(store_skills[i]);
           }
-
           return a_skills
 
         }else{ return null }

@@ -3,7 +3,14 @@ import Vuex from "vuex";
 
 import Auth from '../api/Authentication'
 import UserFunc from '../api/UserFunctions'
+import UserInf from '../api/UserInformation'
 import Skills from '../api/Skills'
+import AdminFunc from '../api/AdminFunctions'
+import PageFunc from '../api/PageFunctions'
+import LogFunc from '../api/LogFunctions'
+
+import axios from 'axios';
+
 
 Vue.use(Vuex)
 
@@ -14,7 +21,7 @@ import Socket from '../socket/sc';
 export default new Vuex.Store({
     state: {
         token: cookies.get('token') || null,
-        admin: null,
+        admin: cookies.get('token') ? Auth.verifyT(cookies.get('token')).then((res) => {return res.data.admin}).catch((err) => {return null}) : null,
         user: {
             id: cookies.get('userID') || null,
             username: cookies.get('username') || null,
@@ -27,7 +34,10 @@ export default new Vuex.Store({
         userSkills:{
             tp: 0
         },
-        skills: null
+        skills: null,
+        notificationCounts: {},
+        users: [],
+        settings: [],
     },
     mutations: {
         setToken(state, token) {
@@ -73,13 +83,28 @@ export default new Vuex.Store({
         },
         destroySkills(state) {
             state.skills = null
+        },
+        setNotificationCounts(state, counts) {
+            state.notificationCounts = counts
+        },
+        setAllUser(state, users) {
+            state.users = users
+        },
+        setSettings(state, sett) {
+            state.settings = sett
+        },
+        destroyAllUser(state) {
+            state.users = []
+        },
+        destroySettings(state) {
+            state.settings = []
         }
     },
     actions: {
         LOGIN(context, payload) {
-            return new Promise((resolve, reject) => {
+            new Promise((resolve, reject) => {
                 Auth.login(payload)
-                .then(res => {
+                .then(async (res) => {
                     const token = res.data.token;
                     const user = res.data.user
                     const temp_res = res
@@ -93,19 +118,32 @@ export default new Vuex.Store({
                     context.commit('setToken', token)
                     context.commit('setUserInfo', user)
 
+                    let ip_response = await axios('https://api.ipify.org?format=json')
+
+                    LogFunc.addLog({user_id: user._id, message: "Sikeres bejelentkezés észlelve. IP: " + ip_response.data.ip, variant: "success"})
+                    LogFunc.addLog({user_id: "admin", message: "'" + user.username + "'(" + user._id + ") belépett az oldalra erről az IP címről: " + ip_response.data.ip})
+
                     Auth.verifyT(context.getters.getToken)
                     .then(res => {
                         context.commit('setAdmin', res.data.admin)
-                        resolve(temp_res)
+                        return resolve(temp_res)
                     })
                     .catch(err => {
                         context.commit('setAdmin', false)
-                        reject(err.message)
+                        return reject(err.response)
                     })
                 })
-                .catch(err => {
-                    console.log("reject" + err)
-                    reject(err)
+                .catch(async (err) => {
+                    console.log("Hiba a storebol:" + err.response)
+                    let ip_response = await axios('https://api.ipify.org?format=json')
+                    const username = JSON.parse(err.config.data).username
+                    const req = await UserInf.getId(JSON.parse(err.config.data).username)
+                    const id = req.data[0]._id.toString()
+
+                    //NÉV ALAPJÁN ID-t LEKÉRNI == getdata/:id csak getid/:username vhogy bekéne védeni hogy csak az oldal hostjáról érkezhessen ez
+                    LogFunc.addLog({user_id: id.toString(), message: "Sikertelen bejelentkezés észlelve. Okok: Rossz név/jelszó, szerver hiba, aktiválatlan email/fiók. IP: " + ip_response.data.ip, variant: "danger"})
+                    LogFunc.addLog({user_id: "admin", message: "'" + username + "'(" + id.toString() + ") megpróbált belépni de nem sikerült. Okok: Rossz név/jelszó, szerver hiba, aktiválatlan email/fiók. IP: " + ip_response.data.ip})
+                    return reject(JSON.parse(err.config.data).username)
                 })
             });
         },
@@ -125,6 +163,8 @@ export default new Vuex.Store({
                         context.commit('destroyUserInfo')
                         context.commit('destroyUserSkills')
                         context.commit('destroySkills')
+                        context.commit('destroyAllUser')
+                        context.commit('destroySettings')
                         resolve(res)
                     })
                     .catch(err => {
@@ -139,23 +179,12 @@ export default new Vuex.Store({
                         context.commit('destroyUserSkills')
                         context.commit('destroyUserInfo')
                         context.commit('destroySkills')
+                        context.commit('destroyAllUser')
+                        context.commit('destroySettings')
                         reject(err)
                     })
                 });
             }
-        },
-        ISADMIN(context) {
-            return new Promise((resolve, reject) => {
-                Auth.verifyT(context.getters.getToken)
-                .then(res => {
-                    context.commit('setAdmin', res.data.admin)
-                    resolve(true)
-                })
-                .catch(err => {
-                    context.commit('setAdmin', false)
-                    reject(err.message)
-                })
-            });
         },
         CHECK_LOGOUT(context) {
             if(context.getters.getUser.id == null) return false
@@ -208,7 +237,7 @@ export default new Vuex.Store({
         SET_SKIN(context, payload) {
             return new Promise((resolve,reject) =>{
                 if(payload != null){
-                    Socket.setSkin(context.getters.getToken, context.getters.getUsername, payload.skin)
+                    Socket.setSkin(context.getters.getToken, context.getters.getUsername, payload.sex + "" +payload.skin)
                     .then((res) => {
                         UserFunc.setSkin(context.getters.getUser.id, payload.skin)
                         .then((res) => {
@@ -222,6 +251,67 @@ export default new Vuex.Store({
                     }).catch(err => console.log(err))
                 }
             })
+        },
+        SET_NOTIFICATION_COUNTS(context) {
+            return new Promise((resolve, reject) => {
+
+                let notis = {}
+
+                if(context.getters.loggedIn) {
+
+                    AdminFunc.getAllPlayer()
+                    .then(res => {
+                        const registeredUsers = res.data.filter(x => x.permissions.verified == 0)
+
+                        notis = {
+                            profile: context.getters.getUserSkills.tp,
+                            admin: {
+                                users: 0,
+                                regs: registeredUsers.length,
+                                all: registeredUsers.length
+                            }
+                        }
+
+                        context.commit('setNotificationCounts', notis)
+                        resolve(true)
+                    })
+                    .catch(err => reject(err))
+                }
+            })
+        },
+        GET_ALL_PLAYER(context) {
+            return new Promise((resolve, reject) => {
+                AdminFunc.getAllPlayer()
+                .then(res => {
+                    if(res.data) {
+                        context.commit('setAllUser', res.data)
+                        resolve(res.data)
+                    }
+                })
+                .catch(err => {
+                    console.log("err" + err)
+                })
+            })
+        },
+        GET_SETTINGS(context) {
+            return new Promise((resolve, reject) => {
+                PageFunc.getSettings()
+                .then((res) => {
+                    context.commit('setSettings', res.data[0])
+                    resolve(res.data[0])
+                })
+                .catch(err => reject(err))
+            })
+        },
+        UPDATE_SETTINGS(context, settings) {
+            return new Promise((resolve, reject) => {
+                PageFunc.saveSettings(settings)
+                .then((res) => {
+                    context.commit('setSettings',settings)
+                    resolve(res)
+                })
+                .catch(err => reject(err))
+            })
         }
     },
     modules: {},
@@ -233,6 +323,9 @@ export default new Vuex.Store({
         isAdmin: state => state.admin,
         getSkills: state => state.skills,
         getLogout: state => state.user.logout,
-        getUserSkills: state => state.userSkills
+        getUserSkills: state => state.userSkills,
+        notificationCount: state => state.notificationCounts,
+        allPlayer: state => state.users,
+        getSettings: state => state.settings
     }
 });
