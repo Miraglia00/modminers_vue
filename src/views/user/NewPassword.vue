@@ -6,7 +6,7 @@
               <template v-slot:header><h3 class="success">Sikeresen jelszó váltás!</h3></template>
 
               <template v-slot:lead>
-              Köszönjük hogy aktiváltad e-mail címed. Ha adminjaink már elfogadták fiókod akkor be is tudsz jelentkezni, ha még nem akkor türelmedet kérjük.<br />
+              A jelszó váltása megtörtént, most már betudsz lépni az új jelszavaddal.<br />
               Ezt az ablakot már bezárhatod.
               </template>
 
@@ -73,6 +73,12 @@
                         <b-button @click="sendPswReset" block class="p-10" squared variant="outline-primary" align-v="center">
                             Új jelszó!
                         </b-button>
+                        <hr mb-3>
+                        <router-link to="/">
+                        <b-button block class="p-10" squared variant="outline-primary" align-v="center">
+                            Vissza
+                        </b-button>
+                        </router-link>
                     </div>
 
                 </b-card-text>

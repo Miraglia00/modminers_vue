@@ -8,35 +8,35 @@
 
         <!-- MD -->
         <b-row>     
-          <b-table-simple responsive class="p-0 d-none d-md-table">
+          <b-table-simple responsive class="p-0 d-xs-table">
             <b-thead head-variant="dark">
               <b-tr>
-                <b-th>id</b-th>
+                <b-th class="d-none d-md-block">id</b-th>
                 <b-th>Felhasználónév</b-th>
-                <b-th class="text-center">#</b-th>
+                <b-th class="text-center">Bemutatkozás</b-th>
                 <b-th class="text-center">Státusz</b-th>
-                <b-th class="text-center">Def</b-th>
               </b-tr>
             </b-thead>
             <b-tbody>
               <b-tr v-for="player in orderedPlayers" :key="player._id">
+
+                <!-- ID -->
                 <b-td class="d-none d-md-block"><b-icon-eye v-b-tooltip.hover :title="player._id" class="icon"></b-icon-eye></b-td>
+
+                <!-- USERNAME -->
                 <b-td>{{player.username}}</b-td>
 
                  <b-td class="text-center"><b-icon-eye style="cursor:pointer" class="icon" v-b-modal.modal-desc @click="selected = player"></b-icon-eye></b-td>
 
-                <b-td class="text-center">
-                    <b-form-radio button button-variant="outline-success" v-model="player.status" name="some-radios" value=1 class="mr-2"><b-icon-check class="icon"></b-icon-check></b-form-radio>
-                    <b-form-radio button button-variant="outline-light" v-model="player.status" name="some-radios" value=0 class="mr-2"><b-icon-question class="icon"></b-icon-question></b-form-radio>
-                    <b-form-radio button button-variant="outline-danger" v-model="player.status" name="some-radios" value=-1><b-icon-x class="icon"></b-icon-x></b-form-radio>
+                <b-td class="text-center bg-success" v-if="player.status == 1">
+                  <b-icon-check-all class="icon"></b-icon-check-all>
                 </b-td>
-
-                <b-td class="text-center">
-                  <b-icon-check v-if="player.def == 1" class="icon"></b-icon-check>
-                  <b-icon-question v-if="player.def == 0" class="icon"></b-icon-question>
-                  <b-icon-x v-if="player.def == -1" class="icon"></b-icon-x>
+                  <b-td class="text-center bg-light" v-else-if="player.status == 0">
+                  <b-icon-question class="icon"></b-icon-question>
                 </b-td>
-
+                <b-td class="text-center bg-danger" v-if="player.status == -1">
+                  <b-icon-x class="icon"></b-icon-x>
+                </b-td>
               </b-tr>
             </b-tbody>
           </b-table-simple>
@@ -44,10 +44,7 @@
       </b-card-text>
        <template v-slot:footer>
         <div class="d-flex justify-content-between align-items-center">
-            <b>Összes játékos: {{getCount}}</b> | <b class="text-success">Elfogadott: {{getAccepted}}</b> | <b class="text-light">Kérdéses: {{getPending}}</b> | <b class="text-danger">Elutasított: {{getRejected}}</b>
-            <b-button w-25 class="p-10" squared variant="outline-primary" align-v="center" @click="updateAllPlayer()">
-                <b>Mentés!</b>
-            </b-button>
+            <b>Összes játékos: {{getCount}}</b> | <b class="text-success">Elfogadott: {{getAccepted}}</b> | <b class="text-light">Kérdéses: {{getPending}}</b> | <b class="text-danger">Elutasított: {{getRejected}}</b> |
         </div>
       </template>
     </b-card>
@@ -62,9 +59,25 @@
     <p class="m-0 p-0 text-center">Regisztráció dátuma: {{selected.reg_date}}</p>
 
     <template v-slot:modal-footer="{ hide }">
-      <b-button class="w-100 p-10 mb-2 mb-md-0" squared variant="outline-danger" align-v="center" @click="hide()">
-         Bezár
+     
+      <b-container v-if="selected.status == 0">
+        <b-row class="mb-2">
+          <b-col xs="12" lg="6" class="p-0 pr-2">
+            <b-button class="w-100 p-10" squared variant="outline-success" align-v="center" @click="updatePlayer(1)">
+            Elfogad
+            </b-button>
+          </b-col>
+          <b-col xs="12" lg="6" class="p-0 pl-2">
+            <b-button class="w-100 p-10" squared variant="outline-danger" align-v="center" @click="updatePlayer(-1)">
+            Elutasít
+            </b-button>
+          </b-col>
+        </b-row>
+      </b-container>
+      <b-button v-else class="w-100 p-10" squared variant="outline-danger" align-v="center" @click="hide()">
+        Bezár
       </b-button>
+
     </template>
 </b-modal>
 
@@ -79,6 +92,7 @@ import _ from 'lodash';
 
 export default {
     inject: ['loadingSpinner'],
+    props: ['deletedUser'],
     data() {
       return {
           visible: true,
@@ -93,7 +107,7 @@ export default {
       })
     },
     methods: {
-      getPlayers(){
+      async getPlayers(){
         this.$store.dispatch('GET_ALL_PLAYER')
         .then(res => {
           this.fillStates()
@@ -108,12 +122,18 @@ export default {
               this.states.push({_id: element._id, username: element.username, desc: element.description, status: element.permissions.verified, reg_date: element.reg_date, def:element.permissions.verified})
           })
       },
-      async updatePlayer() {
-        this.states.forEach( async (e)=> {
-          if(e.def != e.status) {
-            AdminFunc.updatePlayer(e._id, {'permissions.verified': e.status})
+      async updatePlayer(stat) {      
+          if(this.selected.def == 0) {
+            AdminFunc.updatePlayer(this.selected._id, {'permissions.verified': stat})
             .then(res => {
-              this.saved++
+              this.$emit('showMessage', {
+                title: "Sikeres mentés!",
+                message: "A felhasználó fiókja sikeresen felül lett írva.",
+                variant: "success"
+              })
+              this.getPlayers();
+              this.$refs['modal-desc'].hide();
+              this.$store.dispatch("SET_NOTIFICATION_COUNTS")
             })
             .catch(err => {
               this.$emit('showMessage', {
@@ -123,23 +143,7 @@ export default {
               })
             })
           }
-        })
       },
-      //TODO: Make asynchronous update
-      async updateAllPlayer() {
-        if(this.$store.getters.isAdmin) {
-          this.updatePlayer()
-          .then(res => {
-            this.$emit('showMessage', {
-              title: "Sikeres mentés!",
-              message: "A folyamat a háttérben zajlik, a végeredményt a táblázatban láthatod!",
-              variant: "success"
-            })
-            this.$store.dispatch("SET_NOTIFICATION_COUNTS")
-            this.getPlayers()
-          })
-        }
-      }
     },
     computed: {
         allPlayer() {
@@ -166,6 +170,12 @@ export default {
         orderedPlayers() {
             return _.orderBy(this.states, 'reg_date', 'desc')
         }
+    },
+    watch: {
+      deletedUser()  {
+        this.getPlayers()
+        this.$store.dispatch("SET_NOTIFICATION_COUNTS")
+      }
     }
   }
 </script>

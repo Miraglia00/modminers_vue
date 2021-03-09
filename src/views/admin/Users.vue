@@ -234,7 +234,7 @@
         </b-button>
       </b-col>
       <b-col xs="12" md="3">
-        <b-button class="w-100 p-10" squared variant="outline-danger" align-v="center">
+        <b-button class="w-100 p-10" squared variant="outline-danger" align-v="center" @click="deletePlayer()">
           Törlés!
         </b-button>
       </b-col>
@@ -384,6 +384,51 @@ export default {
 
           return this.getPlayers()
 
+        }
+      },
+      async deletePlayer(){
+        if(this.$store.getters.isAdmin) {
+          this.$bvModal.msgBoxConfirm('Biztos vagy benne hogy szeretnéd törölni ezt a felhasználót?' + 
+              'A folyamat nem vonható vissza, és akár a weben kívül is maradhat fájl ami ehhez a játékoshoz tartozik!', {
+            title: 'Biztos vagy benne?',
+            size: 'md',
+            buttonSize: 'md',
+            okVariant: 'danger',
+            okTitle: 'Igen, törlés!',
+            cancelTitle: 'Nem, meggondoltam magam!',
+            footerClass: 'p-2',
+            hideHeaderClose: false,
+            centered: true
+          })
+            .then(async (value) => {
+              let data = true
+              let logs = true
+              if(value) {
+                AdminFunc.deletePlayerData(this.edit._id).catch(err => data = err)
+                AdminFunc.deletePlayerNotifications(this.edit._id).catch(err => logs = err)
+
+              this.$emit('showMessage', {
+                title: "Sikeres törlés!",
+                message: (data == true) ? "A játkos adatai törölve az adatbázisból!" : "Váratlan hiba: " + data, 
+                variant: (data == true) ? "success" : "danger", 
+              });
+              this.$emit('showMessage', {
+                title: "Sikeres törlés!",
+                message: (logs == true) ? "A játkos logja törölve az adatbázisból!" : "Váratlan hiba: " + logs, 
+                variant: (logs == true) ? "success" : "danger", 
+              });
+                this.getPlayers()
+                this.$refs['edit-modal'].hide()
+                this.$emit("deletedUser", true)
+              }
+            })
+            .catch(err => {
+              this.$emit('showMessage', {
+                title: "Sikertelen törlés!",
+                message: err, 
+                variant: "danger", 
+              });
+            })
         }
       },
       getVerifiedClass(status){

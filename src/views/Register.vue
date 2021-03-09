@@ -98,6 +98,12 @@
 <script>
 
 import Authentication from '../api/Authentication';
+import LogFunc from '../api/LogFunctions';
+import UserFunc from '../api/UserFunctions';
+import UserInf from '../api/UserInformation';
+
+
+import axios from 'axios';
 
 export default {
   inject: ['loadingSpinner', 'navBar'],
@@ -141,6 +147,11 @@ export default {
           message: "A regisztráció véglegesítéséhez megkell erősítened az e-mail címed és adminisztrátoraink elbírálják kérésed. Ezután már be is tudsz jelentekzni a weboldalra. :)",
           variant: "success"
         });
+
+        let ip_response = await axios('https://api.ipify.org?format=json')
+        let id = await UserInf.getId(this.username);
+
+        LogFunc.addLog({user_id: "admin", message: "'" + this.username + "'(" + id.data._id + ") beregisztrált a weboldalra. IP: " + ip_response.data.ip})
         this.$router.replace('/login');
          
       }catch(err) {

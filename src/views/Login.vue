@@ -116,7 +116,6 @@ export default {
 
       })
       .catch(err => {
-        console.log("Hiba loginnal:" + err)
         this.loadingSpinner.val = false;
         this.errormsg = err.data
         this.usernameState = this.errormsg.username || this.errormsg.user_notverified ? false : true;

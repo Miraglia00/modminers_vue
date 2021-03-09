@@ -12,8 +12,10 @@
       :icon-size="fab.iconSize"
       @openLog="openLog"
       @game="game"
+      @openAdminLog="openAdminLog"
     ></fab>
     <Log />
+    <AdminLog />
   </div>
 </template>
 <style>
@@ -27,6 +29,7 @@ import LoadingSpinner from './components/LoadingSpinner';
 import PageSpinner from './components/PageSpinner';
 import NetworkError from './views/errors/NetworkError';
 import Log from './components/Log';
+import AdminLog from './components/adminLog';
 
 import api from './api/api.js';
 import PageFunc from './api/PageFunctions.js'
@@ -38,7 +41,8 @@ export default {
     LoadingSpinner,
     PageSpinner,
     NetworkError,
-    Log
+    Log,
+    AdminLog
   },
    data() {
     return {
@@ -63,6 +67,9 @@ export default {
       },
       logs: {
         val: []
+      },
+      adminlogs: {
+        val: []
       }
     }
   },
@@ -71,12 +78,13 @@ export default {
       pageSpinner: this.pagespin,
       loadingSpinner: this.loadspin,
       navBar: this.navbar,
-      userLogs: this.logs
+      userLogs: this.logs,
+      adminLogs: this.adminlogs
     };
   },
   mounted() {
     this.$nextTick(async function () {
-       //this.checkNetwork();
+      this.checkNetwork();
       if(this.neterror == true){
           this.navbar.val = false
       }else{
@@ -92,16 +100,16 @@ export default {
   computed: {
     loggedIn: () => this.$store.getters.loggedIn,
     fabActions() {
+      let returnObj = []
       if(this.$store.getters.getSettings.game == true){
-        return [
-          { name: 'game', icon: 'sports_esports' },
-          { name: 'openLog', icon: 'code' }
-        ]
-      }else{
-        return [
-          { name: 'openLog', icon: 'code' }
-        ]
+        returnObj.push({name: 'game', icon: 'sports_esports'})
       }
+      if(this.$store.getters.isAdmin) {
+        returnObj.push({name: 'openAdminLog', icon: 'admin_panel_settings'})
+      }
+      returnObj.push({name: 'openLog', icon: 'code'})
+
+      return returnObj
     }
   },
   methods: {
@@ -123,21 +131,13 @@ export default {
     async openLog(){
         this.$root.$emit('bv::show::modal', 'log-modal', '#btnShow')
         let count = 0
-        let admin_logs = ""
+
         const logs = await LogFunc.getUserLog(this.$store.getters.getUser.id)
 
         count += logs.data.length
 
-        if(this.$store.getters.isAdmin) {
-          admin_logs = await LogFunc.getAdminLog()
-          count += admin_logs.data.length
-        }
-
         if(count != this.logs.val.lenght) {
           this.logs.val = []
-          admin_logs.data.forEach(e => {
-            this.logs.val.push(e)
-          });
           logs.data.forEach(e => {
             this.logs.val.push(e)
           })
@@ -147,6 +147,26 @@ export default {
           return false
         }else return this.logs.val
         
+    },
+    async openAdminLog(){
+      if(this.$store.getters.isAdmin) {
+        this.$root.$emit('bv::show::modal', 'admin-log-modal', '#btnShow')
+        let count = 0
+
+        const admin_logs = await LogFunc.getAdminLog()
+        count += admin_logs.data.length
+
+        if(count != this.adminlogs.val.lenght) {
+          this.adminlogs.val = []
+          admin_logs.data.forEach(e => {
+            this.adminlogs.val.push(e)
+          });
+        }
+
+        if(this.adminlogs.val === []) {
+          return false
+        }else return this.adminlogs.val
+      }
     },
     showMessage(message) {
       this.$bvToast.toast(message.message, {

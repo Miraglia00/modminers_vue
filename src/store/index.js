@@ -102,7 +102,7 @@ export default new Vuex.Store({
     },
     actions: {
         LOGIN(context, payload) {
-            new Promise((resolve, reject) => {
+            return new Promise((resolve, reject) => {
                 Auth.login(payload)
                 .then(async (res) => {
                     const token = res.data.token;
@@ -126,24 +126,28 @@ export default new Vuex.Store({
                     Auth.verifyT(context.getters.getToken)
                     .then(res => {
                         context.commit('setAdmin', res.data.admin)
-                        return resolve(temp_res)
+                        resolve(temp_res)
                     })
                     .catch(err => {
                         context.commit('setAdmin', false)
-                        return reject(err.response)
+                        reject(err.response)
                     })
                 })
                 .catch(async (err) => {
-                    console.log("Hiba a storebol:" + err.response)
-                    let ip_response = await axios('https://api.ipify.org?format=json')
-                    const username = JSON.parse(err.config.data).username
-                    const req = await UserInf.getId(JSON.parse(err.config.data).username)
-                    const id = req.data[0]._id.toString()
+                    if(JSON.parse(err.config.data).username != "" || JSON.parse(err.config.data).password != "") {
+                        let ip_response = await axios('https://api.ipify.org?format=json')
+                        const username = JSON.parse(err.config.data).username
+                        const req = await UserInf.getId(JSON.parse(err.config.data).username)
+                        const id = req.data._id
 
-                    //NÉV ALAPJÁN ID-t LEKÉRNI == getdata/:id csak getid/:username vhogy bekéne védeni hogy csak az oldal hostjáról érkezhessen ez
-                    LogFunc.addLog({user_id: id.toString(), message: "Sikertelen bejelentkezés észlelve. Okok: Rossz név/jelszó, szerver hiba, aktiválatlan email/fiók. IP: " + ip_response.data.ip, variant: "danger"})
-                    LogFunc.addLog({user_id: "admin", message: "'" + username + "'(" + id.toString() + ") megpróbált belépni de nem sikerült. Okok: Rossz név/jelszó, szerver hiba, aktiválatlan email/fiók. IP: " + ip_response.data.ip})
-                    return reject(JSON.parse(err.config.data).username)
+                        //NÉV ALAPJÁN ID-t LEKÉRNI == getdata/:id csak getid/:username vhogy bekéne védeni hogy csak az oldal hostjáról érkezhessen ez
+                        LogFunc.addLog({user_id: id, message: "Sikertelen bejelentkezés észlelve. Okok: Rossz név/jelszó, szerver hiba, aktiválatlan email/fiók. IP: " + ip_response.data.ip, variant: "danger"})
+                        LogFunc.addLog({user_id: "admin", message: "'" + username + "'(" + id + ") megpróbált belépni de nem sikerült. Okok: Rossz név/jelszó, szerver hiba, aktiválatlan email/fiók. IP: " + ip_response.data.ip})
+                        reject(err.response)
+                    }else{
+                        reject(err.response)
+                    }
+                   
                 })
             });
         },
@@ -252,23 +256,27 @@ export default new Vuex.Store({
                 }
             })
         },
-        SET_NOTIFICATION_COUNTS(context) {
+        SET_NOTIFICATION_COUNTS(context, payload) {
             return new Promise((resolve, reject) => {
 
                 let notis = {}
+                let regs = 0
 
                 if(context.getters.loggedIn) {
 
                     AdminFunc.getAllPlayer()
                     .then(res => {
-                        const registeredUsers = res.data.filter(x => x.permissions.verified == 0)
+                        regs = res.data.filter(x => x.permissions.verified == 0)
+                        regs = regs.length
+
+                        if(payload != null) {regs = payload.pending}
 
                         notis = {
                             profile: context.getters.getUserSkills.tp,
                             admin: {
                                 users: 0,
-                                regs: registeredUsers.length,
-                                all: registeredUsers.length
+                                regs: regs,
+                                all: regs
                             }
                         }
 

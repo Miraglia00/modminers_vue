@@ -1,8 +1,11 @@
 <template>
 <b-navbar toggleable="lg" type="dark" variant="primary">
     <b-navbar-brand href="#" class="mr-5">ModMiners</b-navbar-brand>
-
-    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+    <div>
+      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+      <span class="d-xs-block d-lg-none mobile-badge small admin-noti"><b-badge v-if="countNotifications.admin && countNotifications.admin.all > 0" variant="danger">{{countNotifications.admin.all}}</b-badge></span>
+    </div>
+    
 
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
@@ -97,5 +100,9 @@ a:hover {
 
 .navbar {
   font-size: 16px;
+}
+
+.mobile-badge{
+  position: relative;
 }
 </style>

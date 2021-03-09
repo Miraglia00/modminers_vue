@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="log-modal" hide-footer title="Log" size="xl">
+  <b-modal id="admin-log-modal" hide-footer title="AdminLog" size="xl">
       <div class="d-block text-center">
         <b-list-group v-if="formattedLogs">
           <b-list-group-item class="d-flex justify-content-between align-items-center" :variant="(log.variant == '') ? 'warning' : log.variant" v-for="log in formattedLogs" :key="log._id">
@@ -13,7 +13,7 @@
 <script>
 import _ from 'lodash';
 export default {
-  inject: ['userLogs'],
+  inject: ['adminLogs'],
 
   data() {
     return {
@@ -21,8 +21,8 @@ export default {
   },
   computed: {
     formattedLogs() {
-      if(Object.keys(this.userLogs.val) != 0) {
-        return _.orderBy(this.userLogs.val, 'created', 'desc')
+      if(Object.keys(this.adminLogs.val) != 0) {
+        return _.orderBy(this.adminLogs.val, 'created', 'desc')
       }else return false
     },
   }
