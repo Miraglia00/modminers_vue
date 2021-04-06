@@ -11,6 +11,21 @@
             <b-form-checkbox v-if="settings != null" v-model="settings.game" switch size="lg" class="mb-2"></b-form-checkbox>
           </b-col>
         </b-row>
+
+        <b-row class="mt-2">
+          <b-col xs="12" class="d-flex justify-content-between align-items-center mb-2">
+            <span>Logok:</span>
+            <div class="">
+              <b-button class="p-10 w-100" squared variant="outline-danger" align-v="center" @click="deleteLogs()">
+                <b>Logok törlése!</b>
+              </b-button>
+
+              <b-button class="p-10 w-100" squared variant="outline-danger" align-v="center" @click="deleteAdminLogs()">
+                <b>Admin logok törlése!</b>
+              </b-button>
+            </div>
+          </b-col>
+        </b-row>
       </b-card-text>
       <template v-slot:footer>
         <div class="d-flex justify-content-end align-items-center">
@@ -58,7 +73,28 @@ export default {
           } 
         })
       }
-    }
+    },
+    deleteLogs(){
+      this.$bvModal.msgBoxConfirm('Biztos vagy benne hogy szeretnéd törölni az ÖSSZES FELHASZNÁLÓ logot?' + 
+              'A folyamat nem vonható vissza!', {
+            title: 'Biztos vagy benne?',
+            size: 'md',
+            buttonSize: 'md',
+            okVariant: 'danger',
+            okTitle: 'Igen, törlés!',
+            cancelTitle: 'Nem, meggondoltam magam!',
+            footerClass: 'p-2',
+            hideHeaderClose: false,
+            centered: true
+      })
+      .then(value => {
+
+      })
+      .catch(err => {
+        
+      })
+    },
+    deleteAdminLogs(){},
   }
 }
 </script>
