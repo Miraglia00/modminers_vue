@@ -102,6 +102,7 @@ export default new Vuex.Store({
     },
     actions: {
         LOGIN(context, payload) {
+
             return new Promise((resolve, reject) => {
                 Auth.login(payload)
                 .then(async (res) => {
@@ -118,10 +119,8 @@ export default new Vuex.Store({
                     context.commit('setToken', token)
                     context.commit('setUserInfo', user)
 
-                    let ip_response = await axios('https://api.ipify.org?format=json')
-
-                    LogFunc.addLog({user_id: user._id, message: "Sikeres bejelentkezés észlelve. IP: " + ip_response.data.ip, variant: "success"})
-                    LogFunc.addLog({user_id: "admin", message: "'" + user.username + "'(" + user._id + ") belépett az oldalra erről az IP címről: " + ip_response.data.ip})
+                    LogFunc.addLog({user_id: user._id, message: "Sikeres bejelentkezés észlelve. IP: " + res.data.ip, variant: "success"})
+                    LogFunc.addLog({user_id: "admin", message: "'" + user.username + "'(" + user._id + ") belépett az oldalra erről az IP címről: " + res.data.ip})
 
                     Auth.verifyT(context.getters.getToken)
                     .then(res => {
@@ -135,14 +134,18 @@ export default new Vuex.Store({
                 })
                 .catch(async (err) => {
                     if(JSON.parse(err.config.data).username != "" || JSON.parse(err.config.data).password != "") {
-                        let ip_response = await axios('https://api.ipify.org?format=json')
+                        console.log(err.response.data)
                         const username = JSON.parse(err.config.data).username
-                        const req = await UserInf.getId(JSON.parse(err.config.data).username)
-                        const id = req.data._id
+                        const id =  err.response.data._id
+                        const ip =  err.response.data.ip
 
-                        //NÉV ALAPJÁN ID-t LEKÉRNI == getdata/:id csak getid/:username vhogy bekéne védeni hogy csak az oldal hostjáról érkezhessen ez
-                        LogFunc.addLog({user_id: id, message: "Sikertelen bejelentkezés észlelve. Okok: Rossz név/jelszó, szerver hiba, aktiválatlan email/fiók. IP: " + ip_response.data.ip, variant: "danger"})
-                        LogFunc.addLog({user_id: "admin", message: "'" + username + "'(" + id + ") megpróbált belépni de nem sikerült. Okok: Rossz név/jelszó, szerver hiba, aktiválatlan email/fiók. IP: " + ip_response.data.ip})
+                        LogFunc.addLog({user_id: id, message: "Sikertelen bejelentkezés észlelve. Ok: "+ err.response.data.log_message + " IP: " + ip, 
+                                        variant: "danger", 
+                                        icon: "login"})
+                        LogFunc.addLog({user_id: "admin", 
+                                        message: "'" + username + "'(" + id + ") megpróbált belépni de nem sikerült. Ok: "+ err.response.data.log_message + " IP: " + ip, 
+                                        variant: "danger", 
+                                        icon: "login"})
                         reject(err.response)
                     }else{
                         reject(err.response)
