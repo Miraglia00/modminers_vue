@@ -51,7 +51,7 @@
   </b-col>
 </b-row>
 
-<b-modal id="modal-desc" centered :title="selected.username + ' bemutatkozása'">
+<b-modal ref="modal-desc" id="modal-desc" centered :title="selected.username + ' bemutatkozása'">
     <p class="my-2">{{selected.desc}}</p>
 
     <hr class="mb-2" />
