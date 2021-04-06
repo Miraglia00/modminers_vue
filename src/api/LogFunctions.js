@@ -12,6 +12,8 @@ function getAdminLog() {
     return api().get('log/admin')
 }
 
+function deleteLogs()
+
 export default {
     addLog,
     getUserLog,
