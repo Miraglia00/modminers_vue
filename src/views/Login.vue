@@ -118,8 +118,8 @@ export default {
       .catch(err => {
         this.loadingSpinner.val = false;
         this.errormsg = err.data
-        this.usernameState = this.errormsg.username || this.errormsg.user_notverified ? false : true;
-        this.passwordState = this.errormsg.password || this.errormsg.user_notverified ? false : true;
+        this.usernameState = this.errormsg.username || this.errormsg.password || this.errormsg.user_notverified || this.errormsg.email_notverified ? false : true;
+        this.passwordState = this.errormsg.password || this.errormsg.user_notverified || this.errormsg.email_notverified ? false : true;
       })
     }
   }
