@@ -407,20 +407,20 @@ export default {
                 AdminFunc.deletePlayerData(this.edit._id).catch(err => data = err)
                 AdminFunc.deletePlayerNotifications(this.edit._id).catch(err => logs = err)
 
-              this.$emit('showMessage', {
-                title: "Sikeres törlés!",
-                message: (data == true) ? "A játkos adatai törölve az adatbázisból!" : "Váratlan hiba: " + data, 
-                variant: (data == true) ? "success" : "danger", 
-              });
-              this.$emit('showMessage', {
-                title: "Sikeres törlés!",
-                message: (logs == true) ? "A játkos logja törölve az adatbázisból!" : "Váratlan hiba: " + logs, 
-                variant: (logs == true) ? "success" : "danger", 
-              });
-                this.getPlayers()
-                this.$refs['edit-modal'].hide()
-                this.$emit("deletedUser", true)
-              }
+                this.$emit('showMessage', {
+                  title: "Sikeres törlés!",
+                  message: (data == true) ? "A játkos adatai törölve az adatbázisból!" : "Váratlan hiba: " + data, 
+                  variant: (data == true) ? "success" : "danger", 
+                });
+                this.$emit('showMessage', {
+                  title: "Sikeres törlés!",
+                  message: (logs == true) ? "A játkos logja törölve az adatbázisból!" : "Váratlan hiba: " + logs, 
+                  variant: (logs == true) ? "success" : "danger", 
+                });
+                  this.getPlayers()
+                  this.$refs['edit-modal'].hide()
+                  this.$emit("deletedUser", true)
+                }
             })
             .catch(err => {
               this.$emit('showMessage', {
